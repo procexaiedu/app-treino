@@ -15,15 +15,13 @@ Para abrir no iPhone na mesma rede Wi-Fi: `npx vite preview --host --port 4173` 
 
 ## Publicar (GitHub Pages)
 
-O repositório privado já existe em `procexaiedu/app-treino` com o workflow `.github/workflows/pages.yml`. O GitHub Pages neste plano só funciona em repositório público. Para publicar:
+Publicado em `https://procexaiedu.github.io/app-treino/` a partir do branch `gh-pages` (build local; o GitHub Actions da conta está bloqueado por cobrança, então o workflow em `.github/workflows/pages.yml` fica como alternativa).
+
+Para republicar depois de mudar algo:
 
 ```bash
-gh repo edit procexaiedu/app-treino --visibility public --accept-visibility-change-consequences
-gh api -X POST repos/procexaiedu/app-treino/pages -f build_type=workflow
-gh workflow run pages.yml -R procexaiedu/app-treino
+npm run deploy
 ```
-
-URL final: `https://procexaiedu.github.io/app-treino/`. O build usa `VITE_BASE=/app-treino/`.
 
 ## Instalar no iPhone
 

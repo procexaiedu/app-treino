@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "VITE_BASE=/app-treino/ vite build && touch dist/.nojekyll && cd dist && git init -q -b gh-pages && git add -A && git commit -qm Deploy && git push -f https://github.com/procexaiedu/app-treino.git gh-pages && cd .. && rm -rf dist/.git"
   },
   "dependencies": {
     "dexie": "^4.4.6",
