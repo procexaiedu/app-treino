@@ -1,0 +1,267 @@
+[
+  {
+    "id": "warmup_bike",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/HoA9Jzf9A2E?start=0&end=29",
+    "youtubeId": "HoA9Jzf9A2E",
+    "startSec": 0,
+    "endSec": 29,
+    "poster": "https://i.ytimg.com/vi/HoA9Jzf9A2E/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Cycling rehab' (Rehab My Patient, 34 s): bike ergométrica vertical, cadência leve e constante, tronco ereto, mãos apoiadas no guidão à frente. Verificado quadro a quadro 0–29 s (29 s+ é vinheta): braços abaixo do ombro, sem carga, sem retração/depressão forçada. Vídeo diferente do usado em cardio_intervals_bike (mesmo canal, outra gravação) para não repetir URL."
+  },
+  {
+    "id": "rehab_breathing",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/6YB0pv3iv0g?start=0&end=23",
+    "youtubeId": "6YB0pv3iv0g",
+    "startSec": 0,
+    "endSec": 23,
+    "poster": "https://i.ytimg.com/vi/6YB0pv3iv0g/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'How to do Diaphragmatic breathing lying down': deitada de costas, joelhos flexionados, uma mão no peito e outra na barriga; seta indica a barriga subindo enquanto o peito fica parado. Verificado 0–23 s (depois vinheta): nenhum movimento de braço acima do ombro, sem carga."
+  },
+  {
+    "id": "rehab_chin_tuck",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/kaplx1ocaw8?start=18&end=45",
+    "youtubeId": "kaplx1ocaw8",
+    "startSec": 18,
+    "endSec": 45,
+    "poster": "https://i.ytimg.com/vi/kaplx1ocaw8/hqdefault.jpg",
+    "source": "youtube:[P]rehab (The Prehab Guys)",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Supine Chin Tuck' ([P]rehab, fisioterapeutas): deitado de costas, queixo recolhido ('papada') com a nuca apoiada, sem tirar a cabeça. Verificado 18–45 s: só o movimento de retração cervical, braços parados ao lado do corpo. Trecho 12–18 s (mãos tocando o pescoço como dica) foi excluído.",
+    "flags": [
+      "Mostra só a Fase 1 (cabeça no apoio). A progressão Fase 2+ (elevar 1–2 cm) não aparece — descrever no texto do app."
+    ]
+  },
+  {
+    "id": "rehab_thoracic_ext_roller",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/9Y11Kc0E0og?start=0&end=30",
+    "youtubeId": "9Y11Kc0E0og",
+    "startSec": 0,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/9Y11Kc0E0og/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Foam Roller Thoracic Extension' (Rehab My Patient): rolo transversal na torácica, BRAÇOS CRUZADOS NO PEITO o tempo todo, quadril no chão, extensão controlada sobre o rolo. Verificado quadro a quadro 0–36 s: em nenhum momento as mãos vão para trás da cabeça; 39 s+ é vinheta. Descartados 'Repeated Thoracic Extension' (Baptist Health, gCNmsijJdFY) e 3DPT (_KVE3qEytJ4) por usarem mãos atrás da cabeça."
+  },
+  {
+    "id": "rehab_open_book",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/peeW19ofFUg?start=6&end=36",
+    "youtubeId": "peeW19ofFUg",
+    "startSec": 6,
+    "endSec": 36,
+    "poster": "https://i.ytimg.com/vi/peeW19ofFUg/hqdefault.jpg",
+    "source": "youtube:Elite Performance Institute",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Thoracic Rotation Open Book' (canal de fisioterapia/performance): deitado de lado, rolo sob o joelho de cima, braço de cima estendido perpendicular ao tronco (na altura do ombro) e rotacionado para abrir. Verificado 6–36 s: o braço nunca passa acima da cabeça nem além da linha do ombro em relação ao tronco. Descartado rDviWORCWEw (Revival Performance PT) porque o braço vai acima da cabeça em parte do trecho."
+  },
+  {
+    "id": "rehab_ext_rot_band",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/ybNV36DoRfY?start=0&end=27",
+    "youtubeId": "ybNV36DoRfY",
+    "startSec": 0,
+    "endSec": 27,
+    "poster": "https://i.ytimg.com/vi/ybNV36DoRfY/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "abaixo-do-ideal",
+    "reason": "'Banded Shoulder External Rotation' (Rehab My Patient): em pé, cotovelo colado ao corpo a 90°, elástico ancorado na altura do cotovelo, rotação externa lenta. Verificado 0–27 s: cotovelo não descola, braço abaixo do ombro, sem retração/depressão forçada, carga leve (elástico).",
+    "flags": [
+      "Abaixo do ideal: a amplitude no vídeo passa da posição neutra (~45° de rotação externa) — o plano pede parar na neutra (antebraço apontando para frente).",
+      "Não usa toalha entre cotovelo e tronco. Alternativa aberta equivalente (mesma limitação): free-exercise-db External_Rotation_with_Band."
+    ]
+  },
+  {
+    "id": "rehab_band_row",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/TT_JGLeMwiA?start=0&end=27",
+    "youtubeId": "TT_JGLeMwiA",
+    "startSec": 0,
+    "endSec": 27,
+    "poster": "https://i.ytimg.com/vi/TT_JGLeMwiA/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Standing narrow row with band' (Rehab My Patient): em pé, elástico ancorado na porta na altura do peito, puxada com cotovelos junto ao corpo aproximando as escápulas. Verificado 0–27 s: mãos entre peito e costelas baixas, nunca acima do ombro; sem cue de 'ombros para baixo', carga leve.",
+    "flags": [
+      "Mãos terminam um pouco abaixo da linha do peito (costelas baixas); aceitável, mas orientar a manter a puxada na altura do peito."
+    ]
+  },
+  {
+    "id": "rehab_pushup_plus_wall",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/wuqK1W8ApFc?start=0&end=30",
+    "youtubeId": "wuqK1W8ApFc",
+    "startSec": 0,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/wuqK1W8ApFc/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Press-Up Plus with Wall' (Rehab My Patient): mãos na parede na altura do ombro, flexão na parede e setas indicando a protração escapular ('plus') no fim. Verificado 0–33 s: braços na altura do ombro, sem elevação acima, sem carga. Alternativa verificada: 8m7pffdU8cM (Town Center Orthopaedics, 0–26 s, legenda 'at shoulder height')."
+  },
+  {
+    "id": "rehab_prone_w",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/RJ1p_u85KWw?start=74&end=101",
+    "youtubeId": "RJ1p_u85KWw",
+    "startSec": 74,
+    "endSec": 101,
+    "poster": "https://i.ytimg.com/vi/RJ1p_u85KWw/hqdefault.jpg",
+    "source": "youtube:Thrive Physical Therapy",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Prone \"W\" exercise' (Thrive PT): deitado de bruços na maca, testa apoiada, cotovelos dobrados ~90° e ~45° do tronco, elevação dos braços com POLEGARES PARA CIMA e sustentação. Verificado quadro a quadro 74–101 s: braços sempre abaixo da linha do ombro. A introdução em pé (36–62 s) mostra braços acima da cabeça e foi EXCLUÍDA pelo startSec.",
+    "flags": [
+      "Não iniciar antes de 74 s: 36–62 s tem braço acima da cabeça.",
+      "Sem áudio verificado; se a narração disser 'ombros para trás e para baixo', ignorar — seguir o texto do app (aproximar escápulas sem forçar para baixo)."
+    ]
+  },
+  {
+    "id": "stretch_pec_doorway",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/RyQ46QJpIJs?start=13&end=33",
+    "youtubeId": "RyQ46QJpIJs",
+    "startSec": 13,
+    "endSec": 33,
+    "poster": "https://i.ytimg.com/vi/RyQ46QJpIJs/hqdefault.jpg",
+    "source": "youtube:Venture Rehabilitation Sciences Group",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Chest stretch 60 degree' (Bourassa & Associates Rehabilitation Centre): no vão da porta, mãos apoiadas no batente com braços a ~45–60° de abdução — cotovelo claramente ABAIXO da linha do ombro — e leve inclinação à frente. Verificado 13–33 s. Descartados por braço/cotovelo na altura ou acima do ombro: Rehab My Patient OHtz3C0v9lM, Baptist Health B9uY01NoqBg, BalancePT x5o0GUgClBk, University Chiropractic T0QOfOewn58, Wellen bZ-eaBPOGiM, FitLife LSU52o4jTIs (começa alto).",
+    "flags": [
+      "Demonstração bilateral e com cotovelo estendido; o plano é unilateral — fazer um lado por vez mantendo o mesmo ângulo (~45–60°)."
+    ]
+  },
+  {
+    "id": "stretch_pec_roller",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/AN0YqS3dnXs?start=44&end=68",
+    "youtubeId": "AN0YqS3dnXs",
+    "startSec": 44,
+    "endSec": 68,
+    "poster": "https://i.ytimg.com/vi/AN0YqS3dnXs/hqdefault.jpg",
+    "source": "youtube:Coury & Buehler Physical Therapy",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Foam Roll: Pectoralis (Chest) Stretch' (clínica de fisioterapia): deitada com o rolo AO LONGO da coluna, joelhos dobrados, braços abertos a ~30–45° com palmas para cima, relaxados. Verificado 44–68 s. A partir de ~71 s o fisioterapeuta progride os braços para mais alto (perto da cabeça) — cortado pelo endSec.",
+    "flags": [
+      "Não passar de 68 s: depois os braços sobem em direção à cabeça."
+    ]
+  },
+  {
+    "id": "stretch_upper_trap_scalenes",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/x9vxV6Do9fc?start=16&end=46",
+    "youtubeId": "x9vxV6Do9fc",
+    "startSec": 16,
+    "endSec": 46,
+    "poster": "https://i.ytimg.com/vi/x9vxV6Do9fc/hqdefault.jpg",
+    "source": "youtube:Exercise for Healing",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Seated Upper Trapezius Stretch' (Exercise for Healing): sentado, inclina a orelha em direção ao ombro oposto enquanto a mão do lado alongado fica ancorada para baixo segurando a cadeira; nenhuma mão sobre a cabeça. Verificado 16–46 s. Descartados por mão puxando a cabeça (braço acima do ombro): Ryan Klepps DwdEkATOppo, Achilles Healers XKOjeAakmwk. Descartado 2nH6bWtoYl4 (mesmo canal, versão escalenos) por combinar extensão cervical — evitar com discopatia."
+  },
+  {
+    "id": "stretch_levator",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/UBvtRC9gjms?start=0&end=30",
+    "youtubeId": "UBvtRC9gjms",
+    "startSec": 0,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/UBvtRC9gjms/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Senior: How To Stretch Your Levator Scapulae' (Rehab My Patient): sentada, mão do lado alongado segurando a cadeira, gira a cabeça ~45° e leva o nariz em direção à axila oposta. Verificado 0–36 s: sem mão sobre a cabeça, braços abaixo do ombro. Descartados por mão sobre a cabeça: NUH Singapore 0_RO8NbdKBc, Peak Form RcqDyKVB_EQ, AskDoctorJo GSoXPJRnR6E."
+  },
+  {
+    "id": "stretch_hip_flexor",
+    "kind": "image-seq",
+    "url": "https://github.com/yuhonas/free-exercise-db/tree/main/exercises/Kneeling_Hip_Flexor",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Hip_Flexor/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Hip_Flexor/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Kneeling_Hip_Flexor/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Kneeling Hip Flexor': afundo com joelho de trás no chão, mãos no quadril, tronco ereto e deslocamento do peso à frente. Verificado nos 2 quadros: braços abaixo do ombro, sem carga. Alternativa em vídeo: Rehab My Patient K5EZ8ztNEcw 0–30 s (mesma variação)."
+  },
+  {
+    "id": "cardio_bike",
+    "kind": "image-seq",
+    "url": "https://github.com/yuhonas/free-exercise-db/tree/main/exercises/Bicycling_Stationary",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Bicycling_Stationary/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Bicycling, Stationary': bike ergométrica vertical, mãos no guidão à frente, sem carga nos braços. Verificado nos 2 quadros. Licença aberta, por isso preferido ao YouTube."
+  },
+  {
+    "id": "cardio_treadmill_incline",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/y3CEhUdzBLM?start=5&end=20",
+    "youtubeId": "y3CEhUdzBLM",
+    "startSec": 5,
+    "endSec": 20,
+    "poster": "https://i.ytimg.com/vi/y3CEhUdzBLM/hqdefault.jpg",
+    "source": "youtube:Scottish Rite for Children",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Incline Walks' (Scottish Rite for Children, fisioterapia): caminhada em esteira com inclinação visível, sem carga nos braços. Verificado 5–20 s: braços abaixo do ombro, sem carga; 0–5 s é título e 21 s+ é logo. Descartados free-exercise-db Walking_Treadmill e Rehab My Patient xBr64BIyr-M por mostrarem esteira plana.",
+    "flags": [
+      "Canal pediátrico (legendas falam em 'criança'), e 12–20 s é close nos pés; mostra corretamente a inclinação."
+    ]
+  },
+  {
+    "id": "cardio_elliptical",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/CvTqvnDmfLQ?start=0&end=20",
+    "youtubeId": "CvTqvnDmfLQ",
+    "startSec": 0,
+    "endSec": 20,
+    "poster": "https://i.ytimg.com/vi/CvTqvnDmfLQ/hqdefault.jpg",
+    "source": "youtube:Exercise Library dot com",
+    "license": "YouTube embed (ToS)",
+    "quality": "abaixo-do-ideal",
+    "reason": "'Elliptical Training Machine | Exercise Demo' (Exercise Library): elíptico com as mãos nas pegadas junto ao painel, na altura do peito, sem movimento de braço acima do ombro. Verificado 0–20 s.",
+    "flags": [
+      "Abaixo do ideal: pela resolução não dá para confirmar 100% que são as barras FIXAS (parecem as pegadas fixas do painel). Alternativa Rehab My Patient GOAmEBBt6Cs (8–30 s) tem a mesma incerteza; free-exercise-db Elliptical_Trainer descartado por mostrar as alças móveis em uso."
+    ]
+  },
+  {
+    "id": "cardio_intervals_bike",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/SpE0XMsPTvQ?start=0&end=30",
+    "youtubeId": "SpE0XMsPTvQ",
+    "startSec": 0,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/SpE0XMsPTvQ/hqdefault.jpg",
+    "source": "youtube:Rehab My Patient",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Stationary Bike | Machine' (Rehab My Patient): bike ergométrica vertical, pedalada contínua, mãos no guidão à frente. Verificado 0–30 s (31 s+ é vinheta): sem braço acima do ombro, sem carga. Vídeo distinto do warmup_bike e da imagem de cardio_bike.",
+    "flags": [
+      "Variação exigida pelo ids.md é só 'bike ergométrica' (atendida); o vídeo não mostra o protocolo 8 × (30 s forte + 90 s leve) — o timer de intervalos deve vir da UI do app."
+    ]
+  }
+]

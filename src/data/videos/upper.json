@@ -1,0 +1,186 @@
+[
+  {
+    "id": "db_row_unilateral",
+    "kind": "image-seq",
+    "url": "https://github.com/yuhonas/free-exercise-db/tree/main/exercises/One-Arm_Dumbbell_Row",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/One-Arm_Dumbbell_Row/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'One-Arm Dumbbell Row': mão e joelho apoiados no banco, halter puxado ao lado do tronco com cotovelo junto ao corpo. Verificado: braço sempre abaixo do ombro, sem depressão forçada da escápula, sem barra, carga unilateral apoiada."
+  },
+  {
+    "id": "chest_supported_row",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/7oqpWiwSjtY?start=2&end=20",
+    "youtubeId": "7oqpWiwSjtY",
+    "startSec": 2,
+    "endSec": 20,
+    "poster": "https://i.ytimg.com/vi/7oqpWiwSjtY/hqdefault.jpg",
+    "source": "youtube:Quasar Fitness",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "Vídeo intitulado 'Chest-Supported Machine Row - Neutral-Grip': máquina com apoio no peito, pegadas neutras (palmas para dentro), vista lateral e frontal. Verificado quadro a quadro 0–20 s: mãos/cotovelos abaixo da linha do ombro, peito no apoio, sem barra nas costas, sem carga pendurada."
+  },
+  {
+    "id": "incline_pushup_plus",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/b-twM1u_8eE?start=3&end=23",
+    "youtubeId": "b-twM1u_8eE",
+    "startSec": 3,
+    "endSec": 23,
+    "poster": "https://i.ytimg.com/vi/b-twM1u_8eE/hqdefault.jpg",
+    "source": "youtube:Move365 Whitby",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Incline scapular push-up plus full push-up': mãos no banco, protração escapular (plus) com cotovelos estendidos e depois a flexão inclinada completa. Verificado 3–23 s: braços à frente/abaixo do ombro, sem carga, sem forçar ombros para trás e para baixo."
+  },
+  {
+    "id": "hammer_curl",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/qI7fKreMp_0?start=0&end=15",
+    "youtubeId": "qI7fKreMp_0",
+    "startSec": 0,
+    "endSec": 15,
+    "poster": "https://i.ytimg.com/vi/qI7fKreMp_0/hqdefault.jpg",
+    "source": "youtube:The Queen of Lean",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Seated, Alternating Hammer Curl': sentado, pegada neutra, alternado, halteres leves. Verificado: cotovelo junto ao corpo, mão não passa da linha do ombro, sem carga pesada."
+  },
+  {
+    "id": "tricep_kickback",
+    "kind": "file",
+    "url": "https://wger.de/media/exercise-video/655/69e8c1e5-55b2-4da6-8166-092c24b16735.MOV",
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/0.jpg",
+    "source": "wger",
+    "license": "CC-BY-SA 4.0 (autor: Goulart / wger.de)",
+    "quality": "ok",
+    "reason": "Vídeo wger (exercício 655, 12 s, H.264) de tríceps coice unilateral com tronco apoiado no banco e braço paralelo ao chão. Verificado: braço fica na altura do tronco (abaixo do ombro), halter leve, sem barra. Poster e alternativa image-seq: free-exercise-db Tricep_Dumbbell_Kickback (Unlicense).",
+    "flags": [
+      "arquivo .MOV (H.264) — se o player não tocar, usar image-seq free-exercise-db Tricep_Dumbbell_Kickback"
+    ],
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Tricep_Dumbbell_Kickback/1.jpg"
+    ]
+  },
+  {
+    "id": "sidelying_ext_rot_db",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/ub2n-iZeqoU?start=0&end=12",
+    "youtubeId": "ub2n-iZeqoU",
+    "startSec": 0,
+    "endSec": 12,
+    "poster": "https://i.ytimg.com/vi/ub2n-iZeqoU/hqdefault.jpg",
+    "source": "youtube:Comeback Performance",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Sidelying External Rotation with Dumbbells': deitado de lado, cotovelo apoiado junto ao tronco, halter leve, rotação externa curta. Verificado: braço nunca acima do ombro, carga leve, sem barra. Alternativa: free-exercise-db External_Rotation."
+  },
+  {
+    "id": "incline_prone_db_row",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/G35gTqGcXXA?start=0&end=11",
+    "youtubeId": "G35gTqGcXXA",
+    "startSec": 0,
+    "endSec": 11,
+    "poster": "https://i.ytimg.com/vi/G35gTqGcXXA/hqdefault.jpg",
+    "source": "youtube:Andrew Kwong (DeltaBolic)",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "Trecho inicial de 'Chest Supported Row Variations': peito apoiado no banco inclinado, halteres, cotovelos ~45° do tronco. Verificado 0–11 s: sem braço acima do ombro, sem barra, carga apoiada (não pendurada em pé).",
+    "flags": [
+      "13–16 s mostra variação com cotovelos abertos a 90° — endSec=11 exclui"
+    ]
+  },
+  {
+    "id": "machine_row_unilateral",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/nhcmIbjUdlE?start=3&end=30",
+    "youtubeId": "nhcmIbjUdlE",
+    "startSec": 3,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/nhcmIbjUdlE/hqdefault.jpg",
+    "source": "youtube:Live Lean TV Daily Exercises",
+    "license": "YouTube embed (ToS)",
+    "quality": "abaixo-do-ideal",
+    "reason": "'Chest Supported Single Arm Machine Seated Row': máquina articulada com apoio no peito, um braço por vez. Verificado: braço abaixo do ombro, sem barra, sem carga pendurada. Abaixo do ideal: câmera distante/baixa e o tipo de pegada (neutra) não é claramente visível.",
+    "flags": [
+      "pegada neutra não confirmável visualmente; alternativa exata permitida pelo ids.md ('ou halter'): free-exercise-db One-Arm_Dumbbell_Row"
+    ]
+  },
+  {
+    "id": "incline_pushup_pause",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/DfwaGm-Rtq8?start=0&end=10",
+    "youtubeId": "DfwaGm-Rtq8",
+    "startSec": 0,
+    "endSec": 10,
+    "poster": "https://i.ytimg.com/vi/DfwaGm-Rtq8/hqdefault.jpg",
+    "source": "youtube:Joel Lynch",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Incline Pushup with Pause': mãos no banco, pausa visível embaixo (~1–4 s e ~6–9 s). Verificado: braços à frente/abaixo do ombro, sem carga, sem forçar ombros para trás e para baixo."
+  },
+  {
+    "id": "db_curl_unilateral",
+    "kind": "image-seq",
+    "url": "https://github.com/yuhonas/free-exercise-db/tree/main/exercises/Dumbbell_Alternate_Bicep_Curl",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dumbbell_Alternate_Bicep_Curl/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Dumbbell Alternate Bicep Curl': um braço por vez (o outro parado embaixo). Verificado: cotovelo junto ao corpo, mão não passa da linha do ombro, carga moderada."
+  },
+  {
+    "id": "db_skullcrusher_neutral",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/jhmxpVN7qjo?start=13&end=30",
+    "youtubeId": "jhmxpVN7qjo",
+    "startSec": 13,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/jhmxpVN7qjo/hqdefault.jpg",
+    "source": "youtube:Ty Training",
+    "license": "YouTube embed (ToS)",
+    "quality": "abaixo-do-ideal",
+    "reason": "'Neutral Grip Dumbbell Skull Crusher': deitado, pegada neutra, halteres descem ao lado da cabeça. Verificado: braço mais ou menos vertical, halter não vai para trás da cabeça, carga moderada. Abaixo do ideal: leve deriva do cotovelo em direção à cabeça em algumas repetições (o ids.md exige braço VERTICAL). Descartados: free-exercise-db Lying_Dumbbell_Tricep_Extension (braço inclinado para trás), wger 245 (cotovelo vai para trás), m0nx3a5ePuE (carga pesada, halter atrás da cabeça).",
+    "flags": [
+      "leve deriva do cotovelo para trás em algumas reps — orientar: braço fixo apontando para o teto"
+    ]
+  },
+  {
+    "id": "db_shrug_light",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/iPVAdgf81s0?start=6&end=24",
+    "youtubeId": "iPVAdgf81s0",
+    "startSec": 6,
+    "endSec": 24,
+    "poster": "https://i.ytimg.com/vi/iPVAdgf81s0/hqdefault.jpg",
+    "source": "youtube:Sunderland MSK",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Shoulder Shrugs' (serviço de fisioterapia, série Neck Pain Strengthening): em pé, halteres muito leves (~1–2 kg), sobe os ombros e segura no topo. Verificado 6–24 s: braços ao lado do corpo, carga leve, sem forçar ombros para trás e para baixo. Descartados: free-exercise-db Dumbbell_Shrug e RP _t3lrPI6Ns4 (halteres pesados), wger 570 (barra), k8L0yJRu7zc (braço acima da cabeça aos 25 s)."
+  },
+  {
+    "id": "pallof_press",
+    "kind": "youtube",
+    "url": "https://www.youtube-nocookie.com/embed/Y0e2w0aKOXw?start=2&end=30",
+    "youtubeId": "Y0e2w0aKOXw",
+    "startSec": 2,
+    "endSec": 30,
+    "poster": "https://i.ytimg.com/vi/Y0e2w0aKOXw/hqdefault.jpg",
+    "source": "youtube:MEAUXTION FITNESS",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Pallof Press (resistance band)': elástico horizontal na altura do peito, braços estendidos à frente e de volta ao peito. Verificado: braços na altura do peito (não acima do ombro), sem carga pendurada. Alternativa: AH_QZLm_0-s (12–30 s)."
+  }
+]

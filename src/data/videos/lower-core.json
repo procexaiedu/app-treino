@@ -1,0 +1,206 @@
+[
+  {
+    "id": "goblet_squat",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Goblet_Squat/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Goblet_Squat': kettlebell segurado junto ao peito, cotovelos abaixo da linha do ombro, sem barra nas costas. Frames inspecionados (em pé → agachado)."
+  },
+  {
+    "id": "leg_press",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Leg_Press/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Leg_Press': leg press 45°, mãos nas manoplas laterais na altura do quadril. Sem carga nos braços/ombros. Frames inspecionados."
+  },
+  {
+    "id": "bulgarian_split_squat",
+    "kind": "youtube",
+    "url": "https://www.youtube.com/watch?v=oGTVhFgRnes",
+    "youtubeId": "oGTVhFgRnes",
+    "startSec": 8,
+    "endSec": 38,
+    "poster": "https://i.ytimg.com/vi/oGTVhFgRnes/hqdefault.jpg",
+    "source": "youtube:Torokhtiy Weightlifting Library",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Bodyweight Bulgarian Split Squat' (Oleksiy Torokhtiy), vídeo de 47 s sem fala. Storyboard inspecionado segundo a segundo: 8–38 s mostra pé de trás no banco, SEM carga, mãos na cintura (vista lateral 8–26 s, frontal 28–38 s). Descartado o 0–7 s (entrada sentado no banco com braços à frente). free-exercise-db só tem 'Split_Squats' sem banco (não é búlgaro)."
+  },
+  {
+    "id": "leg_extension_unilateral",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_Leg_Extension/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_Leg_Extension/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_Leg_Extension/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Single-Leg_Leg_Extension/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Single-Leg_Leg_Extension': cadeira extensora uma perna por vez, mãos nas manoplas do assento. Frames inspecionados."
+  },
+  {
+    "id": "calf_raise_seated",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Calf_Raise/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Seated_Calf_Raise': máquina de panturrilha SENTADA, apoio nos joelhos (nada sobre os ombros). Alternativa equivalente no mesmo banco: 'Calf_Press_On_The_Leg_Press_Machine'. Frames inspecionados."
+  },
+  {
+    "id": "hip_thrust",
+    "kind": "youtube",
+    "url": "https://www.youtube.com/watch?v=8xJ0Vxjv0sw",
+    "youtubeId": "8xJ0Vxjv0sw",
+    "startSec": 22,
+    "endSec": 42,
+    "poster": "https://i.ytimg.com/vi/8xJ0Vxjv0sw/hqdefault.jpg",
+    "source": "youtube:One Minute Tutorial",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Hip Thrust Machine: Quick Tutorial' — hip thrust em MÁQUINA (cinto/alavanca no quadril), mãos nas manoplas na altura da cintura. Storyboard inspecionado: 22–42 s são repetições corretas contínuas; descartados 8–10 s (exemplo de erro marcado com X) e 44–47 s (ilustração anatômica). free-exercise-db 'Barbell_Hip_Thrust' foi preterido porque mostra os braços abertos sobre o banco na linha do ombro (abdução horizontal com peito aberto)."
+  },
+  {
+    "id": "rdl_db",
+    "kind": "youtube",
+    "url": "https://www.youtube.com/watch?v=hQgFixeXdZo",
+    "youtubeId": "hQgFixeXdZo",
+    "startSec": 44,
+    "endSec": 74,
+    "poster": "https://i.ytimg.com/vi/hQgFixeXdZo/hqdefault.jpg",
+    "source": "youtube:J2FIT Strength & Conditioning",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Dumbbell Romanian (RDL) Deadlift | TECHNIQUE for Beginners' — RDL com halteres de carga leve/moderada, braços soltos ao lado do corpo, ombros neutros (sem retração/depressão forçada visível). Storyboard inspecionado: 44–64 s repetições em vista frontal-oblíqua, 66–72 s vista lateral, 74 s repetição final. free-exercise-db 'Stiff-Legged_Dumbbell_Deadlift' preterido: é stiff (joelhos quase estendidos) com halteres aparentemente mais pesados.",
+    "flags": [
+      "vídeo com narração: o áudio não foi verificado — se houver cue de 'ombros para trás e para baixo', ignorar; visualmente os ombros ficam neutros"
+    ]
+  },
+  {
+    "id": "leg_curl",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Seated_Leg_Curl/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Seated_Leg_Curl': cadeira flexora sentada, mãos nas manoplas junto ao quadril. Preferida à 'Lying_Leg_Curls', em que o executante deitado estende os braços à frente da cabeça para segurar as manoplas (flexão de ombro elevada)."
+  },
+  {
+    "id": "back_extension_45",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Hyperextensions_Back_Extensions/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Hyperextensions_Back_Extensions': banco inclinado (~45°) com BRAÇOS CRUZADOS NO PEITO nos dois frames (não atrás da cabeça). Frames inspecionados.",
+    "flags": [
+      "o frame final mostra flexão de tronco profunda; na execução, descer só até onde a lombar fica neutra e subir até alinhar o tronco com as pernas, sem hiperestender"
+    ]
+  },
+  {
+    "id": "hip_abduction_machine",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Thigh_Abductor/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Thigh_Abductor': cadeira abdutora, mãos nas manoplas do assento. Frames inspecionados."
+  },
+  {
+    "id": "dead_bug",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Dead_Bug/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Dead_Bug': deitada, braços apontando para o TETO nos dois frames (parados); o que muda entre os frames é a perna que se estende. Não mostra a versão com braço indo acima da cabeça.",
+    "flags": [
+      "são 2 frames estáticos: não prova o movimento, mas ambos mostram os braços na vertical — manter assim durante todo o exercício"
+    ]
+  },
+  {
+    "id": "plank",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Plank/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Plank': prancha frontal nos ANTEBRAÇOS, cotovelos sob os ombros. Frame 0 é só a preparação ajoelhado."
+  },
+  {
+    "id": "side_plank",
+    "kind": "image-seq",
+    "url": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg",
+    "frames": [
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg",
+      "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/1.jpg"
+    ],
+    "poster": "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/Side_Bridge/0.jpg",
+    "source": "free-exercise-db",
+    "license": "Unlicense (domínio público)",
+    "quality": "ok",
+    "reason": "free-exercise-db 'Side_Bridge': antebraço no chão com cotovelo abaixo do ombro, mão de cima no quadril (braço não sobe). Frames inspecionados.",
+    "flags": [
+      "mostra a versão com pernas estendidas (pés apoiados); na Fase 1 fazer com os JOELHOS apoiados (joelhos flexionados), mantendo o resto igual"
+    ]
+  },
+  {
+    "id": "bird_dog_leg",
+    "kind": "youtube",
+    "url": "https://www.youtube.com/watch?v=V8-dWU-U5ag",
+    "youtubeId": "V8-dWU-U5ag",
+    "startSec": 48,
+    "endSec": 78,
+    "poster": "https://i.ytimg.com/vi/V8-dWU-U5ag/hqdefault.jpg",
+    "source": "youtube:Transform Chiropractic",
+    "license": "YouTube embed (ToS)",
+    "quality": "ok",
+    "reason": "'Beginner bird dog exercise' (Dr. Byron Mackay), cartela na tela: 'Bird Dog/Cross Crawl Beginner - Leg only'. Storyboard inspecionado: 48–78 s mostra quatro apoios com as DUAS MÃOS NO CHÃO o tempo todo, estendendo só a perna até a horizontal e segurando. Descartado 0–46 s (explicação, gesticula com a mão). BioEndurance PT (u9cwfMYwXVo) preterido: mostra chute com joelho dobrado e, a partir de 36 s, o bird dog clássico com braço estendido."
+  }
+]
