@@ -3,10 +3,10 @@ import { plan } from '../data/plan';
 import { VideoDemo } from '../components/VideoDemo';
 import { getExercise } from '../lib/phase';
 
-const TABS = ['Leitura', 'Fases', 'Regras', 'Exercícios'] as const;
+const TABS = ['Fases', 'Exercícios'] as const;
 
 export function PlanPage() {
-  const [tab, setTab] = useState<(typeof TABS)[number]>('Leitura');
+  const [tab, setTab] = useState<(typeof TABS)[number]>('Fases');
   return (
     <div className="pb-32">
       <header className="px-4 pt-3 pb-2"><h1 className="text-2xl font-bold">Plano</h1></header>
@@ -16,21 +16,6 @@ export function PlanPage() {
         ))}
       </div>
       <div className="px-4 flex flex-col gap-3 mt-2">
-        {tab === 'Leitura' && (
-          <>
-            {plan.reading.map((r) => (
-              <section key={r.title} className="card p-4">
-                <h2 className="font-bold text-lg mb-1">{r.title}</h2>
-                {r.paragraphs.map((p) => <p key={p} className="text-[15px] mb-2 leading-snug">{p}</p>)}
-                {r.bullets?.length ? <ul className="list-disc pl-5 text-[15px] space-y-1">{r.bullets.map((b) => <li key={b}>{b}</li>)}</ul> : null}
-              </section>
-            ))}
-            <section className="card p-4">
-              <h2 className="font-bold text-lg mb-1">Suposições</h2>
-              <ul className="list-disc pl-5 text-[15px] space-y-1">{plan.meta.assumptions.map((a) => <li key={a}>{a}</li>)}</ul>
-            </section>
-          </>
-        )}
         {tab === 'Fases' && (
           <>
             {plan.phases.map((p) => (
@@ -64,32 +49,6 @@ export function PlanPage() {
               <div className="text-[15px] mt-1"><span className="muted">Evitar por enquanto: </span>{plan.cardioGuide.avoid.join('; ')}</div>
               <div className="text-[15px] mt-1"><span className="muted">Dose semanal: </span>{plan.cardioGuide.weeklyMinutes}</div>
               <ul className="list-disc pl-5 text-[15px] mt-1">{plan.cardioGuide.offGym.map((o) => <li key={o}>{o}</li>)}</ul>
-            </section>
-          </>
-        )}
-        {tab === 'Regras' && (
-          <>
-            <section className="card p-4">
-              <h2 className="font-bold text-lg mb-1">Quando aumentar a carga</h2>
-              <p className="text-sm muted mb-1">Aumente quando as três condições valerem ao mesmo tempo:</p>
-              <ol className="list-decimal pl-5 text-[15px] space-y-1">{plan.progression.increaseConditions.map((c) => <li key={c}>{c}</li>)}</ol>
-              <ul className="list-disc pl-5 text-[15px] mt-2 space-y-1">{plan.progression.increments.map((c) => <li key={c}>{c}</li>)}</ul>
-              <p className="text-[15px] mt-2">{plan.progression.upperBodyMaxOnePer.text}</p>
-            </section>
-            <section className="card p-4">
-              <h2 className="font-bold text-lg mb-1">Assimetria: lado esquerdo</h2>
-              <ul className="list-disc pl-5 text-[15px] space-y-1">{plan.progression.asymmetry.map((c) => <li key={c}>{c}</li>)}</ul>
-              <p className="text-[15px] mt-2"><span className="font-semibold">Teste a cada {plan.asymmetryTest.everyWeeks} semanas: </span>{plan.asymmetryTest.text} Meta: {plan.asymmetryTest.target}.</p>
-              <p className="text-sm muted mt-1">Exercícios: {plan.asymmetryTest.exercises.map((id) => getExercise(id).name).join('; ')}.</p>
-            </section>
-            <section className="card p-4">
-              <h2 className="font-bold text-lg mb-1">Sintomas</h2>
-              <p className="text-[15px]">{plan.progression.symptomRegress.text}</p>
-              <p className="text-[15px] mt-2">{plan.progression.acceptablePain}</p>
-            </section>
-            <section className="card p-4">
-              <h2 className="font-bold text-lg mb-1">Alongamentos</h2>
-              <p className="text-[15px]">{plan.stretchNote}</p>
             </section>
           </>
         )}
