@@ -1,23 +1,37 @@
 import { useState } from 'react';
 import { plan } from '../data/plan';
 import { VideoDemo } from '../components/VideoDemo';
-import { getExercise } from '../lib/phase';
+import { getExercise, phaseForWeek, weekNumber } from '../lib/phase';
 import { TabChips } from '../components/TabChips';
 import { IconChevronDown } from '../components/icons';
 
 const TABS = ['Fases', 'Exercícios'] as const;
 
-export function PlanPage() {
+export function PlanPage({ startDate }: { startDate: string }) {
   const [tab, setTab] = useState<(typeof TABS)[number]>('Fases');
+  const week = weekNumber(startDate);
+  const curPhase = phaseForWeek(week);
+  const total = plan.meta.weeks;
   return (
     <div className="pb-40">
-      <header className="px-4 pt-4 pb-3"><h1 className="text-[28px] leading-tight font-bold">Plano</h1></header>
+      <header className="px-4 pt-4 pb-3">
+        <h1 className="text-[28px] leading-tight font-bold">Plano</h1>
+        <div className="mt-2 flex items-center gap-3">
+          <div className="flex-1 grid gap-1" style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }} role="progressbar" aria-label="Semanas do plano" aria-valuemin={1} aria-valuemax={total} aria-valuenow={Math.min(week, total)}>
+            {Array.from({ length: total }).map((_, i) => (
+              <span key={i} className="h-1.5 rounded-full" style={{ background: i + 1 < week ? 'color-mix(in srgb, var(--accent) 55%, var(--card2))' : i + 1 === week ? 'var(--accent)' : 'var(--card2)' }} />
+            ))}
+          </div>
+          <span className="text-sm muted num shrink-0">semana {Math.min(week, total)}/{total}</span>
+        </div>
+      </header>
       <TabChips tabs={TABS} value={tab} onChange={setTab} label="Seções do plano" />
       <div className="px-4 flex flex-col gap-3 mt-2">
         {tab === 'Fases' && (
           <>
             {plan.phases.map((p) => (
-              <section key={p.id} className="card p-4">
+              <section key={p.id} className="card p-4" style={p.id === curPhase ? { boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent)' } : p.id < curPhase ? { opacity: 0.75 } : undefined}>
+                {p.id === curPhase && <span className="pill mb-2" style={{ background: 'color-mix(in srgb, var(--accent) 16%, transparent)', color: 'var(--accent)' }}>Você está aqui</span>}
                 <h2 className="font-bold text-lg leading-snug">Fase {p.id}: {p.name} <span className="muted text-sm font-normal num whitespace-nowrap">· semanas {p.weeks[0]}{p.weeks[1] !== p.weeks[0] ? `–${p.weeks[1]}` : ''}</span></h2>
                 <dl className="text-[15px] mt-3 grid grid-cols-[5.5rem_1fr] gap-x-2 gap-y-2">
                   <dt className="muted">Séries</dt><dd>{p.setsRule}</dd>

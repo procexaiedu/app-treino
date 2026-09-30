@@ -6,7 +6,7 @@ import { plan } from '../data/plan';
 import { tracking } from '../data/tracking';
 import { getExercise, todayISO, weekNumber } from '../lib/phase';
 import { evaluateNutritionRules, loadStalled, weeklyAverages } from '../lib/rules';
-import { IconAlert, IconCheck } from '../components/icons';
+import { IconAlert, IconCheck, IconTrophy } from '../components/icons';
 
 // Mostra "Salvo" por 1,5 s depois de gravar
 function useFlash(): [boolean, () => void] {
@@ -48,7 +48,9 @@ export function ProgressPage({ startDate }: { startDate: string }) {
     <div className="pb-40 px-4">
       <header className="pt-4 pb-3"><h1 className="text-[28px] leading-tight font-bold">Progresso</h1><div className="text-sm muted mt-1 num">Semana {planWeek} do plano</div></header>
 
-      <section className="card p-4">
+      <TrainingSummary startDate={startDate} />
+
+      <section className="card p-4 mt-3">
         <h2 className="font-bold text-lg mb-3"><label htmlFor="w-today">Peso de hoje</label></h2>
         <div className="flex gap-2">
           <input id="w-today" aria-describedby="w-how" type="number" inputMode="decimal" step="0.1" placeholder={todayW ? String(todayW.kg) : 'kg'} value={w} onChange={(e) => setW(e.target.value)} className="tap field flex-1 min-w-0 text-center text-2xl font-semibold" />
@@ -101,6 +103,8 @@ export function ProgressPage({ startDate }: { startDate: string }) {
 
       <LoadCharts />
 
+      <Records />
+
       <AsymSection today={today} />
 
       <section className="card p-4 mt-3">
@@ -150,12 +154,27 @@ function LoadCharts() {
     return [...byDate.values()];
   }, [sets]);
   const stalled = useMemo(() => loadStalled(sets), [sets]);
+  const tiles = useMemo(() => {
+    const maxOf = (r: { L?: number; R?: number; both?: number }) => Math.max(r.L ?? 0, r.R ?? 0, r.both ?? 0);
+    if (!data.length) return null;
+    const best = Math.max(...data.map(maxOf));
+    const last = maxOf(data[data.length - 1]);
+    const first = maxOf(data[0]);
+    return { best, last, delta: last - first };
+  }, [data]);
   return (
     <section className="card p-4 mt-3">
       <h2 className="font-bold text-lg mb-3"><label htmlFor="load-ex">Cargas por exercício</label></h2>
       <select id="load-ex" className="tap field w-full px-3" value={exId} onChange={(e) => setExId(e.target.value)}>
         {loadedIds.map((id) => <option key={id} value={id}>{getExercise(id).name}</option>)}
       </select>
+      {tiles && (
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <StatTile v={`${fmt1(tiles.best)} kg`} l="melhor" accent />
+          <StatTile v={`${fmt1(tiles.last)} kg`} l="última sessão" />
+          <StatTile v={data.length > 1 ? `${tiles.delta > 0 ? '+' : ''}${fmt1(tiles.delta)} kg` : '—'} l="desde o início" />
+        </div>
+      )}
       {stalled && <div className="mt-3 p-3 rounded-xl text-sm font-medium" style={{ background: 'var(--warn)', color: 'var(--on-color)' }}>{tracking.rules.find((r) => r.id === 'stalled_load')?.trigger} {tracking.rules.find((r) => r.id === 'stalled_load')?.action}</div>}
       {data.length < 2 ? <div className="mt-3"><EmptyChart text="Registre pelo menos 2 sessões com carga." /></div> : (
         <div style={{ height: 200 }} className="mt-2">
@@ -212,6 +231,74 @@ function AsymSection({ today }: { today: string }) {
           <thead><tr className="muted text-left">{['Data', 'Exercício', 'kg', 'E', 'D', 'Dif.'].map((h) => <th key={h} scope="col" className="font-medium pb-1 pr-1">{h}</th>)}</tr></thead>
           <tbody>{tests.slice(0, 12).map((t) => { const diff = t.repsR ? Math.round(((t.repsR - t.repsL) / t.repsR) * 100) : 0; return <tr key={t.id} className="border-t" style={{ borderColor: 'var(--border)' }}><td className="py-1.5 pr-1 whitespace-nowrap">{t.date.slice(5)}</td><td>{getExercise(t.exerciseId).name.split(' ').slice(0, 2).join(' ')}</td><td>{t.loadKg}</td><td>{t.repsL}</td><td>{t.repsR}</td><td style={{ color: Math.abs(diff) > 15 ? 'var(--warn)' : 'var(--accent)' }}>{diff}%</td></tr>; })}</tbody>
         </table>
+      )}
+    </section>
+  );
+}
+
+function fmt1(n: number) {
+  return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+}
+
+function StatTile({ v, l, accent }: { v: string; l: string; accent?: boolean }) {
+  return (
+    <div className="card2 px-2 py-3">
+      <div className="text-xl font-bold num leading-tight" style={accent ? { color: 'var(--accent)' } : undefined}>{v}</div>
+      <div className="text-sm muted leading-snug mt-0.5">{l}</div>
+    </div>
+  );
+}
+
+/** Resumo de treinos (padrão Hevy/NTC): sessões concluídas, semana atual e séries. */
+function TrainingSummary({ startDate }: { startDate: string }) {
+  const sessions = useLiveQuery(() => db.sessionLogs.toArray(), []) ?? [];
+  const setCount = useLiveQuery(() => db.setLogs.filter((s) => s.reps != null).count(), []) ?? 0;
+  const week = weekNumber(startDate);
+  const done = sessions.filter((s) => s.completed);
+  const thisWeek = done.filter((s) => s.week === week).length;
+  const perWeek = plan.sessions.length;
+  return (
+    <section className="card p-4">
+      <h2 className="font-bold text-lg mb-3">Treinos</h2>
+      <div className="grid grid-cols-3 gap-2 text-center">
+        <StatTile v={`${thisWeek}/${perWeek}`} l="nesta semana" accent={thisWeek > 0} />
+        <StatTile v={String(done.length)} l="sessões concluídas" />
+        <StatTile v={String(setCount)} l="séries registradas" />
+      </div>
+      <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--card2)' }} role="progressbar" aria-label="Sessões desta semana" aria-valuemin={0} aria-valuemax={perWeek} aria-valuenow={thisWeek}>
+        <div className="h-full w-full rounded-full origin-left" style={{ transform: `scaleX(${Math.min(1, thisWeek / perWeek)})`, background: 'var(--accent)' }} />
+      </div>
+    </section>
+  );
+}
+
+/** Recordes de carga por exercício (melhor carga e data). */
+function Records() {
+  const all = useLiveQuery(() => db.setLogs.toArray(), []) ?? [];
+  const rows = useMemo(() => {
+    const best = new Map<string, { kg: number; date: string }>();
+    for (const s of all) {
+      if (s.loadKg == null || s.reps == null) continue;
+      const cur = best.get(s.exerciseId);
+      if (!cur || s.loadKg > cur.kg) best.set(s.exerciseId, { kg: s.loadKg, date: s.date });
+    }
+    return [...best.entries()]
+      .filter(([id]) => plan.exercises[id]?.loaded)
+      .map(([id, v]) => ({ id, name: getExercise(id).name, ...v }))
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [all]);
+  return (
+    <section className="card p-4 mt-3">
+      <h2 className="font-bold text-lg mb-2 flex items-center gap-2"><IconTrophy size={20} style={{ color: 'var(--accent)' }} />Recordes de carga</h2>
+      {rows.length === 0 ? <EmptyChart text="Os recordes aparecem depois da primeira série com carga." /> : (
+        <ul className="flex flex-col">
+          {rows.map((r) => (
+            <li key={r.id} className="flex items-baseline justify-between gap-3 py-2 border-t first:border-t-0" style={{ borderColor: 'var(--border)' }}>
+              <span className="text-[15px] min-w-0">{r.name}</span>
+              <span className="shrink-0 text-right num"><span className="font-bold">{fmt1(r.kg)} kg</span> <span className="text-sm muted">{r.date.slice(8)}/{r.date.slice(5, 7)}</span></span>
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   );

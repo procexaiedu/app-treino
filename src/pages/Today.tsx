@@ -1,18 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentType, type KeyboardEvent, type SVGProps } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { plan } from '../data/plan';
-import type { Exercise, PhaseId, Prescription, Session, SessionBlock } from '../data/types';
-import { db, getExerciseState, type ExerciseState, type SetLog } from '../lib/db';
+import type { Exercise, ItemKind, PhaseId, Prescription, Session, SessionBlock } from '../data/types';
+import { db, getExerciseState, type ExerciseLog, type ExerciseState, type SetLog } from '../lib/db';
 import { clampPhase, effectivePrescription, getExercise, phaseForWeek, sessionForDate, todayISO, weekNumber, WEEKDAY_PT } from '../lib/phase';
 import { applySymptomRegress, checkIncrease, clampRightToLeft, lastLoads, type IncreaseCheck } from '../lib/rules';
 import { useRestTimer } from '../lib/timer';
 import { RestTimerBar } from '../components/RestTimer';
 import { VideoDemo } from '../components/VideoDemo';
 import { Sheet } from '../components/Sheet';
-import { IconCalendar, IconCheck, IconChevronDown, IconCircle, IconPlay } from '../components/icons';
+import {
+  IconActivity, IconCalendar, IconCheck, IconChevronDown, IconChevronRight, IconCircle, IconDumbbell, IconFlame,
+  IconHistory, IconMinus, IconPlay, IconPlus, IconShieldPlus, IconStretch, IconTrophy,
+} from '../components/icons';
 
+type SideKey = 'L' | 'R' | 'both';
+type IconT = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;
 
-const KIND_SHORT: Record<string, string> = { warmup: 'Aquec.', rehab: 'Reab.', main: 'Principal', cardio: 'Cardio', stretch: 'Along.' };
+const KIND_SHORT: Record<ItemKind, string> = { warmup: 'Aquec.', rehab: 'Reab.', main: 'Principal', cardio: 'Cardio', stretch: 'Along.' };
+const KIND_ICON: Record<ItemKind, IconT> = { warmup: IconFlame, rehab: IconShieldPlus, main: IconDumbbell, cardio: IconActivity, stretch: IconStretch };
+const SIDE_LABEL: Record<SideKey, string> = { L: 'Esquerdo', R: 'Direito', both: '' };
+const SIDE_SHORT: Record<SideKey, string> = { L: 'E', R: 'D', both: '' };
+const SIDE_COLOR: Record<SideKey, string> = { L: 'var(--left)', R: 'var(--right)', both: 'var(--accent)' };
+
+/** Timer de descanso + rótulo do que vem depois (mostrado na barra). */
+type Rest = ReturnType<typeof useRestTimer> & { begin: (sec: number, label: string) => void };
 
 export function Today({ startDate }: { startDate: string }) {
   const [dateOverride, setDateOverride] = useState<Date | null>(null);
@@ -24,6 +36,8 @@ export function Today({ startDate }: { startDate: string }) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const session: Session | null = sessionId ? plan.sessions.find((s) => s.id === sessionId) ?? null : autoSession;
   const timer = useRestTimer();
+  const [restLabel, setRestLabel] = useState<string | null>(null);
+  const rest: Rest = { ...timer, begin: (sec, label) => { setRestLabel(label); timer.start(sec); } };
 
   const sessionLog = useLiveQuery(() => (session ? db.sessionLogs.where('[date+sessionId]').equals([iso, session.id]).first() : undefined), [iso, session?.id]);
   const [finishOpen, setFinishOpen] = useState(false);
@@ -80,20 +94,134 @@ export function Today({ startDate }: { startDate: string }) {
           <p className="muted mt-2">Meta do dia: caminhada de 30–40 min, primeira refeição com 40–50 g de proteína e água. Escolha um treino acima se quiser adiantar.</p>
         </div>
       ) : (
-        <SessionView key={`${session.id}-${iso}`} session={session} phase={phase} week={week} iso={iso} timer={timer} sessionLog={sessionLog ?? null} onFinish={() => setFinishOpen(true)} />
+        <SessionView key={`${session.id}-${iso}`} session={session} phase={phase} week={week} iso={iso} rest={rest} sessionLog={sessionLog ?? null} onFinish={() => setFinishOpen(true)} />
       )}
 
-      <RestTimerBar t={timer} />
+      <RestTimerBar t={timer} label={restLabel} />
       {session && <FinishSheet open={finishOpen} onClose={() => setFinishOpen(false)} session={session} iso={iso} week={week} phase={phase} />}
     </div>
   );
 }
 
-function SessionView({ session, phase, week, iso, timer, sessionLog, onFinish }: {
-  session: Session; phase: PhaseId; week: number; iso: string; timer: ReturnType<typeof useRestTimer>;
+// ---------------- Progresso da sessão (derivado do banco) ----------------
+
+interface ItemStatus {
+  key: string; // `${blockIndex}-${exerciseId}`
+  ex: Exercise;
+  blockIndex: number;
+  hidden: boolean;
+  totalSets: number;
+  doneSets: number;
+  done: boolean;
+  started: boolean;
+}
+
+function setIsDone(s: SetLog, ex: Exercise) {
+  return s.reps != null || (!ex.loaded && !!s.side);
+}
+
+function statusFor(ex: Exercise, presc: Prescription, hidden: boolean, sets: SetLog[], exLog: ExerciseLog | undefined) {
+  const sides = ex.unilateral ? 2 : 1;
+  const totalSets = presc.sets * sides;
+  const doneSets = new Set(sets.filter((s) => setIsDone(s, ex)).map((s) => `${s.side}${s.setIndex}`)).size;
+  const done = !hidden && ((doneSets >= totalSets && totalSets > 0) || !!exLog?.done);
+  return { totalSets, doneSets, done, started: doneSets > 0 || !!exLog };
+}
+
+/** Estado da sessão inteira: feitos/total, séries, volume, início, próximo exercício. */
+function useSessionProgress(session: Session, phase: PhaseId, week: number, iso: string) {
+  const states = useLiveQuery(() => db.exerciseState.toArray(), []);
+  const exLogs = useLiveQuery(() => db.exerciseLogs.where('date').equals(iso).toArray(), [iso]);
+  const daySets = useLiveQuery(() => db.setLogs.where('date').equals(iso).toArray(), [iso]);
+
+  return useMemo(() => {
+    const stateMap = new Map((states ?? []).map((s) => [s.exerciseId, s]));
+    const items: ItemStatus[] = [];
+    const seen = new Set<string>();
+    session.blocks.forEach((block, bi) => {
+      for (const id of block.items) {
+        const ex = getExercise(id);
+        const effPhase = clampPhase(phase + (stateMap.get(id)?.phaseOffset ?? 0));
+        const presc = effectivePrescription(ex, block, effPhase, week);
+        const hidden = presc.sets === 0 || (!!ex.fromPhase && effPhase < ex.fromPhase);
+        const sets = (daySets ?? []).filter((s) => s.exerciseId === id);
+        const st = statusFor(ex, presc, hidden, sets, exLogs?.find((l) => l.exerciseId === id));
+        const dup = seen.has(id);
+        seen.add(id);
+        items.push({ key: `${bi}-${id}`, ex, blockIndex: bi, hidden: hidden || dup, ...st });
+      }
+    });
+    const visible = items.filter((i) => !i.hidden);
+    const ids = new Set(visible.map((i) => i.ex.id));
+    const sessionSets = (daySets ?? []).filter((s) => ids.has(s.exerciseId) && s.reps != null);
+    const volume = sessionSets.reduce((acc, s) => acc + (s.loadKg ?? 0) * (s.reps ?? 0), 0);
+    const tsList = sessionSets.map((s) => s.ts);
+    const startTs = tsList.length ? Math.min(...tsList) : null;
+    const endTs = tsList.length ? Math.max(...tsList) : null;
+    const next = visible.find((i) => !i.done) ?? null;
+    return {
+      items,
+      total: visible.length,
+      doneCount: visible.filter((i) => i.done).length,
+      setCount: sessionSets.length,
+      volume,
+      startTs,
+      endTs,
+      next,
+      anyStarted: visible.some((i) => i.started),
+    };
+  }, [states, exLogs, daySets, session, phase, week]);
+}
+
+function fmtKg(n: number) {
+  return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+}
+function fmtDuration(ms: number) {
+  const min = Math.max(0, Math.round(ms / 60000));
+  if (min < 60) return `${min} min`;
+  return `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')}`;
+}
+function fmtSet(s: Pick<SetLog, 'loadKg' | 'reps' | 'rir'>, loaded: boolean, withRir = false) {
+  const kg = loaded && s.loadKg != null ? `${fmtKg(s.loadKg)} kg` : null;
+  const reps = s.reps != null ? (kg ? `× ${s.reps}` : `${s.reps} reps`) : null;
+  const rir = withRir && s.rir != null ? ` · RIR ${s.rir}` : '';
+  return [kg, reps].filter(Boolean).join(' ') + rir;
+}
+
+function useNow(everyMs: number, active: boolean) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!active) return;
+    const id = setInterval(() => setNow(Date.now()), everyMs);
+    return () => clearInterval(id);
+  }, [everyMs, active]);
+  return now;
+}
+
+// ---------------- Sessão ----------------
+
+function SessionView({ session, phase, week, iso, rest, sessionLog, onFinish }: {
+  session: Session; phase: PhaseId; week: number; iso: string; rest: Rest;
   sessionLog: { completed: boolean } | null; onFinish: () => void;
 }) {
   const cardio = session.cardio[phase];
+  const prog = useSessionProgress(session, phase, week, iso);
+  const [openReq, setOpenReq] = useState<{ key: string; n: number } | null>(null);
+  const now = useNow(30000, prog.startTs != null);
+  const allDone = prog.total > 0 && prog.doneCount >= prog.total;
+  const pct = prog.total ? (prog.doneCount / prog.total) * 100 : 0;
+
+  function goNext() {
+    if (allDone || !prog.next) { onFinish(); return; }
+    setOpenReq((r) => ({ key: prog.next!.key, n: (r?.n ?? 0) + 1 }));
+  }
+
+  const stats = [
+    prog.setCount ? `${prog.setCount} ${prog.setCount === 1 ? 'série' : 'séries'}` : null,
+    prog.volume ? `${fmtKg(prog.volume)} kg` : null,
+    prog.startTs ? fmtDuration(now - prog.startTs) : null,
+  ].filter(Boolean).join(' · ');
+
   return (
     <div className="px-4 mt-2 flex flex-col gap-6">
       <div className="card p-4">
@@ -102,10 +230,12 @@ function SessionView({ session, phase, week, iso, timer, sessionLog, onFinish }:
         <ol className="mt-3 flex flex-wrap gap-1.5 text-sm" aria-label="Blocos da sessão">
           {session.blocks.filter((b, i, arr) => arr.findIndex((x) => x.kind === b.kind) === i).map((b) => {
             const min = b.minutes || (b.kind === 'cardio' ? cardio.minutes : null);
+            const Icon = KIND_ICON[b.kind];
             return (
-              <li key={b.kind} className="card2 rounded-lg px-2.5 py-1.5 leading-tight">
+              <li key={b.kind} className="card2 rounded-lg px-2.5 py-1.5 leading-tight flex items-center gap-1.5">
+                <Icon size={16} className="muted shrink-0" />
                 <span className="font-semibold">{KIND_SHORT[b.kind]}</span>
-                {min ? <span className="muted num"> · {min} min</span> : null}
+                {min ? <span className="muted num">· {min} min</span> : null}
               </li>
             );
           })}
@@ -113,8 +243,32 @@ function SessionView({ session, phase, week, iso, timer, sessionLog, onFinish }:
         {sessionLog?.completed && <div className="mt-3 text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--accent)' }}><IconCheck size={18} />Sessão encerrada hoje</div>}
       </div>
 
+      {/* Barra fixa de progresso da sessão + próximo exercício */}
+      <div className="session-bar sticky z-20 -mx-4 px-4 pt-1 pb-2 -mb-3" style={{ top: 'env(safe-area-inset-top)', background: 'var(--bg)' }}>
+        <button
+          onClick={goNext}
+          className="tap press card w-full flex items-center gap-3 pl-3 pr-2 py-2 text-left"
+          style={{ boxShadow: allDone ? 'inset 0 0 0 1px var(--accent)' : 'inset 0 0 0 1px var(--border)' }}
+          aria-label={allDone ? 'Tudo feito: encerrar sessão' : `Progresso ${prog.doneCount} de ${prog.total}. Ir para o próximo: ${prog.next?.ex.name ?? ''}`}
+        >
+          <span className="num font-bold text-2xl leading-none shrink-0" style={{ color: prog.doneCount ? 'var(--accent)' : 'var(--text)' }}>
+            {prog.doneCount}<span className="muted text-base font-semibold">/{prog.total}</span>
+          </span>
+          <span className="flex-1 min-w-0 leading-tight">
+            <span className="block text-sm muted truncate num">{stats || 'Nenhuma série ainda'}</span>
+            <span className="block font-semibold truncate">
+              {allDone ? 'Tudo feito: encerrar sessão' : `${prog.anyStarted ? 'Próximo' : 'Começar'}: ${prog.next?.ex.name ?? ''}`}
+            </span>
+          </span>
+          <IconChevronRight size={22} className="shrink-0" style={{ color: 'var(--accent)' }} />
+        </button>
+        <div className="mt-1.5 h-1 rounded-full overflow-hidden" style={{ background: 'var(--card2)' }} role="progressbar" aria-label="Exercícios feitos" aria-valuemin={0} aria-valuemax={prog.total} aria-valuenow={prog.doneCount}>
+          <div className="h-full w-full rounded-full origin-left" style={{ transform: `scaleX(${pct / 100})`, background: 'var(--accent)', transition: 'transform 300ms var(--ease-out)' }} />
+        </div>
+      </div>
+
       {session.blocks.map((block, bi) => (
-        <BlockView key={bi} block={block} session={session} phase={phase} week={week} iso={iso} timer={timer} />
+        <BlockView key={bi} bi={bi} block={block} session={session} phase={phase} week={week} iso={iso} rest={rest} items={prog.items.filter((i) => i.blockIndex === bi)} openReq={openReq} />
       ))}
 
       <button onClick={onFinish} className="tap press w-full rounded-2xl py-4 text-lg font-bold" style={{ background: 'var(--accent)', color: 'var(--on-color)' }}>
@@ -124,13 +278,29 @@ function SessionView({ session, phase, week, iso, timer, sessionLog, onFinish }:
   );
 }
 
-function BlockView({ block, session, phase, week, iso, timer }: { block: SessionBlock; session: Session; phase: PhaseId; week: number; iso: string; timer: ReturnType<typeof useRestTimer> }) {
+function BlockView({ bi, block, session, phase, week, iso, rest, items, openReq }: {
+  bi: number; block: SessionBlock; session: Session; phase: PhaseId; week: number; iso: string; rest: Rest; items: ItemStatus[]; openReq: { key: string; n: number } | null;
+}) {
   const cardio = session.cardio[phase];
+  const Icon = KIND_ICON[block.kind];
+  const visible = items.filter((i) => !i.hidden);
+  const done = visible.filter((i) => i.done).length;
+  const complete = visible.length > 0 && done === visible.length;
   return (
-    <section>
-      <div className="flex items-baseline justify-between px-1 mb-2">
-        <h2 className="text-lg font-bold">{block.title}</h2>
-        {block.minutes ? <span className="muted text-sm num">~{block.minutes} min</span> : null}
+    <section aria-label={block.title}>
+      <div className="flex items-center gap-2.5 px-1 mb-2">
+        <span
+          className="flex items-center justify-center rounded-lg shrink-0"
+          style={{ width: 32, height: 32, background: complete ? 'var(--accent)' : 'var(--card2)', color: complete ? 'var(--on-color)' : 'var(--muted)' }}
+          aria-hidden="true"
+        >
+          {complete ? <IconCheck size={18} strokeWidth={2.75} /> : <Icon size={18} />}
+        </span>
+        <h2 className="text-lg font-bold leading-tight flex-1 min-w-0">{block.title}</h2>
+        <span className="muted text-sm num shrink-0">
+          {visible.length > 0 && <span style={{ color: done ? 'var(--accent)' : undefined }}>{done}/{visible.length}</span>}
+          {block.minutes ? <span> · ~{block.minutes} min</span> : null}
+        </span>
       </div>
       {block.kind === 'cardio' && (
         <div className="card p-4 mb-2">
@@ -142,15 +312,30 @@ function BlockView({ block, session, phase, week, iso, timer }: { block: Session
       <div className="flex flex-col gap-2">
         {block.items.map((id) => {
           const ex = getExercise(id);
-          return <ExerciseCard key={`${block.title}-${id}`} ex={ex} block={block} session={session} phase={phase} week={week} iso={iso} timer={timer} />;
+          const key = `${bi}-${id}`;
+          return <ExerciseCard key={key} cardKey={key} ex={ex} block={block} session={session} phase={phase} week={week} iso={iso} rest={rest} openReq={openReq} />;
         })}
       </div>
     </section>
   );
 }
 
-function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exercise; block: SessionBlock; session: Session; phase: PhaseId; week: number; iso: string; timer: ReturnType<typeof useRestTimer> }) {
+/** Última sessão anterior (data < hoje) deste exercício, com as séries dela. */
+function usePreviousSession(exerciseId: string, iso: string) {
+  return useLiveQuery(async () => {
+    const rows = await db.setLogs.where('exerciseId').equals(exerciseId).toArray();
+    const past = rows.filter((r) => r.date < iso && (r.reps != null || r.loadKg != null));
+    if (!past.length) return null;
+    const date = past.reduce((m, r) => (r.date > m ? r.date : m), '');
+    return { date, sets: past.filter((r) => r.date === date) };
+  }, [exerciseId, iso]);
+}
+
+function ExerciseCard({ cardKey, ex, block, session, phase, week, iso, rest, openReq }: {
+  cardKey: string; ex: Exercise; block: SessionBlock; session: Session; phase: PhaseId; week: number; iso: string; rest: Rest; openReq: { key: string; n: number } | null;
+}) {
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const state = useLiveQuery(() => db.exerciseState.get(ex.id), [ex.id]);
   const effPhase = clampPhase(phase + (state?.phaseOffset ?? 0));
   const presc = effectivePrescription(ex, block, effPhase, week);
@@ -158,12 +343,21 @@ function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exe
 
   const exLog = useLiveQuery(() => db.exerciseLogs.where('[exerciseId+date]').equals([ex.id, iso]).first(), [ex.id, iso]);
   const sets = useLiveQuery(() => db.setLogs.where('[exerciseId+date]').equals([ex.id, iso]).sortBy('setIndex'), [ex.id, iso]) ?? [];
-  const doneSets = useMemo(() => new Set(sets.filter((s) => s.reps != null || (!ex.loaded && s.side)).map((s) => `${s.side}${s.setIndex}`)), [sets, ex.loaded]);
+  const previous = usePreviousSession(ex.id, iso);
 
-  const sides: Array<'L' | 'R' | 'both'> = ex.unilateral ? ['L', 'R'] : ['both'];
-  const totalSets = presc.sets * sides.length;
-  const completed = doneSets.size >= totalSets && totalSets > 0;
-  const isDone = completed || !!exLog?.done;
+  const sides: SideKey[] = ex.unilateral ? ['L', 'R'] : ['both'];
+  const st = statusFor(ex, presc, !!hidden, sets, exLog);
+  const completed = st.doneSets >= st.totalSets && st.totalSets > 0;
+  const isDone = st.done;
+  const inProgress = !isDone && st.doneSets > 0;
+  const hasGrid = presc.sets > 0 && (ex.kind === 'main' || ex.kind === 'rehab');
+
+  // "Próximo" na barra da sessão abre e rola até este card
+  useEffect(() => {
+    if (!openReq || openReq.key !== cardKey) return;
+    setOpen(true);
+    requestAnimationFrame(() => rootRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }, [openReq, cardKey]);
 
   async function setSymptom(v: boolean) {
     const row = exLog ?? { date: iso, sessionId: session.id, exerciseId: ex.id, symptom: false, done: false, ts: Date.now() };
@@ -183,10 +377,25 @@ function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exe
     );
   }
 
+  // Resumo "última vez" no card fechado (primeira série de cada lado)
+  const lastSummary = previous && hasGrid
+    ? sides.map((sd) => {
+      const s = previous.sets.find((x) => x.side === sd && x.setIndex === 0) ?? previous.sets.find((x) => x.side === sd);
+      return s ? `${SIDE_SHORT[sd] ? SIDE_SHORT[sd] + ' ' : ''}${fmtSet(s, ex.loaded)}` : null;
+    }).filter(Boolean).join(' · ')
+    : '';
+
   return (
     <div
+      ref={rootRef}
       className="card"
-      style={{ boxShadow: isDone ? 'inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent)' : undefined, transition: 'box-shadow 200ms' }}
+      style={{
+        scrollMarginTop: 'calc(env(safe-area-inset-top) + 96px)',
+        boxShadow: isDone
+          ? 'inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent)'
+          : inProgress || open ? 'inset 3px 0 0 0 var(--accent)' : undefined,
+        transition: 'box-shadow 200ms',
+      }}
     >
       <button className="w-full text-left p-4 rounded-2xl active:bg-[var(--card2)] transition-colors" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         <div className="flex items-start justify-between gap-3">
@@ -204,9 +413,15 @@ function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exe
               {presc.sets > 1 ? `${presc.sets} × ${presc.reps}` : presc.reps}
               {presc.restSec ? ` · desc. ${fmtRest(presc.restSec)}` : ''}
               {presc.rir !== '—' ? ` · RIR ${presc.rir}` : ''}
-              {doneSets.size > 0 && !completed ? <span style={{ color: 'var(--accent)' }}> · {doneSets.size}/{totalSets} séries</span> : null}
             </div>
+            {lastSummary && !open && (
+              <div className="text-sm mt-1 num flex items-center gap-1.5 min-w-0" style={{ color: 'var(--accent2)' }}>
+                <IconHistory size={15} className="shrink-0" />
+                <span className="truncate">Última vez: {lastSummary}</span>
+              </div>
+            )}
             <div className="flex flex-wrap gap-1.5 mt-2 empty:hidden">
+              {inProgress && !completed && <span className="pill num" style={{ background: 'color-mix(in srgb, var(--accent) 16%, transparent)', color: 'var(--accent)' }}>Em andamento {st.doneSets}/{st.totalSets}</span>}
               {ex.unilateral && <span className="pill" style={{ background: 'color-mix(in srgb, var(--left) 18%, transparent)', color: 'var(--left)' }}>Começa pelo esquerdo</span>}
               {state?.phaseOffset ? <span className="pill" style={{ background: 'var(--warn)', color: 'var(--on-color)' }}>Fase {effPhase} neste exercício (voltou {-state.phaseOffset})</span> : null}
               {state?.flaggedSwap && <span className="pill" style={{ background: 'var(--danger)', color: 'var(--on-color)' }}>Trocar exercício</span>}
@@ -230,8 +445,8 @@ function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exe
           ) : null}
           <VideoDemo exerciseId={ex.id} name={ex.name} />
 
-          {presc.sets > 0 && (ex.kind === 'main' || ex.kind === 'rehab') && (
-            <SetGrid ex={ex} presc={presc} sets={sets} sides={sides} iso={iso} sessionId={session.id} timer={timer} />
+          {hasGrid && (
+            <SetGrid ex={ex} presc={presc} sets={sets} sides={sides} iso={iso} sessionId={session.id} rest={rest} previous={previous ?? null} />
           )}
 
           <div className="mt-4 flex flex-col gap-2">
@@ -251,11 +466,16 @@ function ExerciseCard({ ex, block, session, phase, week, iso, timer }: { ex: Exe
   );
 }
 
-function SetGrid({ ex, presc, sets, sides, iso, sessionId, timer }: { ex: Exercise; presc: Prescription; sets: SetLog[]; sides: Array<'L' | 'R' | 'both'>; iso: string; sessionId: string; timer: ReturnType<typeof useRestTimer> }) {
-  const [prev, setPrev] = useState<Record<'L' | 'R' | 'both', number | null>>({ L: null, R: null, both: null });
+function SetGrid({ ex, presc, sets, sides, iso, sessionId, rest, previous }: {
+  ex: Exercise; presc: Prescription; sets: SetLog[]; sides: SideKey[]; iso: string; sessionId: string; rest: Rest;
+  previous: { date: string; sets: SetLog[] } | null;
+}) {
+  const [prev, setPrev] = useState<Record<SideKey, number | null>>({ L: null, R: null, both: null });
   const [state, setState] = useState<ExerciseState | null>(null);
   const [check, setCheck] = useState<IncreaseCheck | null>(null);
   const [clampMsg, setClampMsg] = useState<string | null>(null);
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
   useEffect(() => { void lastLoads(ex.id).then(setPrev); void getExerciseState(ex.id).then(setState); }, [ex.id]);
 
   const symptomToday = useLiveQuery(() => db.exerciseLogs.where('[exerciseId+date]').equals([ex.id, iso]).first().then((r) => !!r?.symptom), [ex.id, iso]) ?? false;
@@ -266,11 +486,31 @@ function SetGrid({ ex, presc, sets, sides, iso, sessionId, timer }: { ex: Exerci
     setCheck(checkIncrease(ex.id, presc, sets, symptomToday, painMax, state, iso));
   }, [sets, symptomToday, painMax, state, ex.id, presc, iso]);
 
-  function get(side: 'L' | 'R' | 'both', i: number) {
+  const range = presc.reps.match(/(\d+)(?:\s*[–-]\s*(\d+))?/);
+  const topReps = range ? Number(range[2] ?? range[1]) : null;
+  const step = ex.loadStepKg ?? 1;
+
+  function get(side: SideKey, i: number) {
     return sets.find((s) => s.side === side && s.setIndex === i);
   }
+  function prevOf(side: SideKey, i: number) {
+    return previous?.sets.find((s) => s.side === side && s.setIndex === i) ?? null;
+  }
+  /** Carga-base para pré-preencher: hoje > mesma série da última vez > esquerdo (p/ direito) > última carga. */
+  function baseLoad(side: SideKey, i: number) {
+    const cur = get(side, i)?.loadKg;
+    if (cur != null) return cur;
+    const p = prevOf(side, i)?.loadKg;
+    if (p != null) return p;
+    if (side === 'R') return get('L', i)?.loadKg ?? prev.L;
+    return prev[side];
+  }
 
-  async function save(side: 'L' | 'R' | 'both', i: number, patch: Partial<SetLog>) {
+  const order = sides.flatMap((side) => Array.from({ length: presc.sets }, (_, i) => ({ side, i, key: `${side}${i}` })));
+  const firstPending = order.find((o) => get(o.side, o.i)?.reps == null)?.key ?? null;
+  const activeKey = focusKey ?? firstPending;
+
+  async function save(side: SideKey, i: number, patch: Partial<SetLog>) {
     const cur = get(side, i);
     let loadKg = patch.loadKg !== undefined ? patch.loadKg : cur?.loadKg ?? null;
     // Regra: o direito nunca recebe mais carga que o esquerdo
@@ -292,53 +532,98 @@ function SetGrid({ ex, presc, sets, sides, iso, sessionId, timer }: { ex: Exerci
     await db.setLogs.put(row);
   }
 
-  async function completeSet(side: 'L' | 'R' | 'both', i: number) {
+  async function completeSet(side: SideKey, i: number) {
     const cur = get(side, i);
     if (!cur || cur.reps == null) {
-      // pré-preenche com o alvo: carga anterior (ou do esquerdo), reps do topo e RIR alvo
-      const range = presc.reps.match(/(\d+)(?:\s*[–-]\s*(\d+))?/);
-      const reps = range ? Number(range[2] ?? range[1]) : null;
+      // pré-preenche com o alvo: carga da última vez (ou do esquerdo), reps do topo e RIR alvo
       const rirM = presc.rir.match(/(\d+)/);
-      let load = cur?.loadKg ?? (side === 'R' ? get('L', i)?.loadKg ?? prev.L : prev[side]);
-      if (!ex.loaded) load = null;
-      await save(side, i, { reps, rir: rirM ? Number(rirM[1]) : null, loadKg: load ?? null });
+      const load = ex.loaded ? baseLoad(side, i) : null;
+      await save(side, i, { reps: cur?.reps ?? topReps, rir: cur?.rir ?? (rirM ? Number(rirM[1]) : null), loadKg: load ?? null });
     }
-    if (presc.restSec > 0) timer.start(presc.restSec);
+    setFocusKey(null); // destaque passa para a próxima série pendente
+    const idx = order.findIndex((o) => o.key === `${side}${i}`);
+    const nextO = order.slice(idx + 1).find((o) => get(o.side, o.i)?.reps == null);
+    const label = nextO ? `depois: série ${nextO.i + 1}${nextO.side !== 'both' ? ` · ${SIDE_LABEL[nextO.side].toLowerCase()}` : ''}` : 'depois: próximo exercício';
+    if (presc.restSec > 0) rest.begin(presc.restSec, label);
   }
 
-  const sideLabel = { L: 'Esquerdo', R: 'Direito', both: '' };
-  const sideColor = { L: 'var(--left)', R: 'var(--right)', both: 'var(--accent)' };
+  async function bump(side: SideKey, i: number, field: 'loadKg' | 'reps', delta: number) {
+    setFocusKey(`${side}${i}`);
+    const cur = get(side, i);
+    if (field === 'loadKg') {
+      const base = baseLoad(side, i) ?? 0;
+      await save(side, i, { loadKg: Math.max(0, Math.round((base + delta) * 10) / 10) });
+    } else {
+      const base = cur?.reps ?? prevOf(side, i)?.reps ?? topReps ?? 0;
+      await save(side, i, { reps: Math.max(0, base + delta) });
+    }
+  }
+
+  /** Enter/"próximo" do teclado pula para o campo seguinte. */
+  function focusNextField(from: HTMLInputElement) {
+    const inputs = Array.from(gridRef.current?.querySelectorAll('input') ?? []);
+    const idx = inputs.indexOf(from);
+    const next = inputs[idx + 1];
+    if (next) next.focus();
+    else from.blur();
+  }
+
+  const cols = `1.75rem ${ex.loaded ? '1fr ' : ''}1fr 1fr 3.25rem`;
 
   return (
-    <div className="mt-3">
-      <div role="status" aria-live="polite">
-        {clampMsg && <div className="text-sm font-medium p-3 rounded-xl mb-3" style={{ background: 'var(--warn)', color: 'var(--on-color)' }}>{clampMsg}</div>}
-      </div>
+    <div className="mt-3" ref={gridRef}>
+      {previous && (
+        <div className="text-sm muted mb-2 flex items-center gap-1.5 num">
+          <IconHistory size={15} className="shrink-0" />
+          Última vez em {previous.date.slice(8)}/{previous.date.slice(5, 7)}
+        </div>
+      )}
       {sides.map((side) => (
         <div key={side} className="mb-4">
-          {side !== 'both' && (
-            <div className="text-sm font-semibold mb-2 flex items-start gap-2" style={{ color: sideColor[side] }}>
-              <span className="inline-block size-2.5 rounded-full mt-1.5 shrink-0" style={{ background: sideColor[side] }} aria-hidden="true" />
-              <span>{sideLabel[side]}{side === 'L' ? ' — começa aqui' : ' — mesma carga e reps do esquerdo, nunca mais'}</span>
+          {side === sides[sides.length - 1] && (
+            <div role="status" aria-live="polite">
+              {clampMsg && <div className="text-sm font-medium p-3 rounded-xl mb-3" style={{ background: 'var(--warn)', color: 'var(--on-color)' }}>{clampMsg}</div>}
             </div>
           )}
-          <div className="grid gap-x-1.5 gap-y-2 items-center" style={{ gridTemplateColumns: `1.75rem ${ex.loaded ? '1fr ' : ''}1fr 1fr 3.25rem` }}>
+          {side !== 'both' && (
+            <div className="text-sm font-semibold mb-2 flex items-start gap-2" style={{ color: SIDE_COLOR[side] }}>
+              <span className="inline-block size-2.5 rounded-full mt-1.5 shrink-0" style={{ background: SIDE_COLOR[side] }} aria-hidden="true" />
+              <span>{SIDE_LABEL[side]}{side === 'L' ? ' — começa aqui' : ' — mesma carga e reps do esquerdo, nunca mais'}</span>
+            </div>
+          )}
+          <div className="grid gap-x-1.5 gap-y-2 items-center" style={{ gridTemplateColumns: cols }}>
             <div className="text-sm muted text-center" aria-hidden="true">#</div>
             {ex.loaded && <div className="text-sm muted text-center" aria-hidden="true">kg</div>}
             <div className="text-sm muted text-center" aria-hidden="true">reps</div>
             <div className="text-sm muted text-center" aria-hidden="true">RIR</div>
             <div />
             {Array.from({ length: presc.sets }).map((_, i) => {
+              const key = `${side}${i}`;
               const s = get(side, i);
-              const done = s?.reps != null;
               return (
-                <SetRow key={i} i={i} s={s} loaded={ex.loaded} done={done} color={sideColor[side]} sideName={sideLabel[side]} onChange={(p) => save(side, i, p)} onDone={() => completeSet(side, i)} />
+                <SetRow
+                  key={i}
+                  i={i}
+                  s={s}
+                  last={prevOf(side, i)}
+                  loaded={ex.loaded}
+                  done={s?.reps != null}
+                  active={activeKey === key}
+                  step={step}
+                  color={SIDE_COLOR[side]}
+                  sideName={SIDE_LABEL[side]}
+                  onFocus={() => setFocusKey(key)}
+                  onEnter={focusNextField}
+                  onChange={(p) => save(side, i, p)}
+                  onDone={() => completeSet(side, i)}
+                  onBump={(f, d) => bump(side, i, f, d)}
+                />
               );
             })}
           </div>
         </div>
       ))}
-      {prev[sides[0]] != null && <div className="text-sm muted num">Última carga: {sides.map((s) => `${sideLabel[s] || 'ambos'} ${prev[s] ?? '—'} kg`).join(' · ')}</div>}
+      {!previous && prev[sides[0]] != null && <div className="text-sm muted num">Última carga: {sides.map((s) => `${SIDE_LABEL[s] || 'ambos'} ${prev[s] ?? '—'} kg`).join(' · ')}</div>}
 
       {check && ex.loaded && sets.some((s) => s.reps != null) && (
         <div className="mt-3 p-3 rounded-xl" style={{ background: check.eligible ? 'var(--accent)' : 'var(--card2)', color: check.eligible ? 'var(--on-color)' : 'var(--text)' }}>
@@ -381,33 +666,68 @@ function SetGrid({ ex, presc, sets, sides, iso, sessionId, timer }: { ex: Exerci
   );
 }
 
-function SetRow({ i, s, loaded, done, color, sideName, onChange, onDone }: { i: number; s: SetLog | undefined; loaded: boolean; done: boolean; color: string; sideName: string; onChange: (p: Partial<SetLog>) => void; onDone: () => void }) {
+function SetRow({ i, s, last, loaded, done, active, step, color, sideName, onFocus, onEnter, onChange, onDone, onBump }: {
+  i: number; s: SetLog | undefined; last: SetLog | null; loaded: boolean; done: boolean; active: boolean; step: number; color: string; sideName: string;
+  onFocus: () => void; onEnter: (el: HTMLInputElement) => void; onChange: (p: Partial<SetLog>) => void; onDone: () => void; onBump: (field: 'loadKg' | 'reps', delta: number) => void;
+}) {
   const num = (v: string) => (v === '' ? null : Number(v.replace(',', '.')));
   const inp = 'tap field w-full min-w-0 text-center text-lg font-semibold px-1';
-  const tint = done ? { background: `color-mix(in srgb, ${color} 10%, var(--card2))`, borderColor: `color-mix(in srgb, ${color} 40%, transparent)` } : undefined;
+  const tint = done
+    ? { background: `color-mix(in srgb, ${color} 10%, var(--card2))`, borderColor: `color-mix(in srgb, ${color} 40%, transparent)` }
+    : active ? { borderColor: `color-mix(in srgb, ${color} 55%, var(--border))` } : undefined;
   const lbl = `Série ${i + 1}${sideName ? ` ${sideName.toLowerCase()}` : ''}`;
+  const common = {
+    onFocus,
+    enterKeyHint: 'next' as const,
+    onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') { e.preventDefault(); onEnter(e.currentTarget); } },
+  };
+  const lastText = last ? fmtSet(last, loaded, true) : '';
   return (
     <>
-      <div className="flex items-center justify-center text-base font-semibold num" style={{ color: done ? color : 'var(--muted)' }}>{i + 1}</div>
-      {loaded && <input className={inp} style={tint} aria-label={`${lbl}: carga em kg`} type="number" inputMode="decimal" step="0.5" placeholder="kg" value={s?.loadKg ?? ''} onChange={(e) => onChange({ loadKg: num(e.target.value) })} />}
-      <input className={inp} style={tint} aria-label={`${lbl}: repetições`} type="number" inputMode="numeric" placeholder="reps" value={s?.reps ?? ''} onChange={(e) => onChange({ reps: num(e.target.value) })} />
-      <input className={inp} style={tint} aria-label={`${lbl}: RIR`} type="number" inputMode="numeric" placeholder="RIR" value={s?.rir ?? ''} onChange={(e) => onChange({ rir: num(e.target.value) })} />
+      <div className="flex items-center justify-center text-base font-semibold num" style={{ color: done || active ? color : 'var(--muted)' }}>{i + 1}</div>
+      {loaded && <input {...common} className={inp} style={tint} aria-label={`${lbl}: carga em kg`} type="number" inputMode="decimal" step="0.5" placeholder={last?.loadKg != null ? fmtKg(last.loadKg) : 'kg'} value={s?.loadKg ?? ''} onChange={(e) => onChange({ loadKg: num(e.target.value) })} />}
+      <input {...common} className={inp} style={tint} aria-label={`${lbl}: repetições`} type="number" inputMode="numeric" placeholder={last?.reps != null ? String(last.reps) : 'reps'} value={s?.reps ?? ''} onChange={(e) => onChange({ reps: num(e.target.value) })} />
+      <input {...common} className={inp} style={tint} aria-label={`${lbl}: RIR`} type="number" inputMode="numeric" placeholder={last?.rir != null ? String(last.rir) : 'RIR'} value={s?.rir ?? ''} onChange={(e) => onChange({ rir: num(e.target.value) })} />
       <button
         onClick={onDone}
         aria-label={done ? `Série ${i + 1} concluída; iniciar descanso` : `Concluir série ${i + 1}`}
         className="tap press flex items-center justify-center rounded-xl"
-        style={{ background: done ? color : 'color-mix(in srgb, var(--accent) 16%, var(--card2))', color: done ? 'var(--on-color)' : 'var(--accent)' }}
+        style={{ background: done ? color : active ? 'var(--accent)' : 'color-mix(in srgb, var(--accent) 16%, var(--card2))', color: done || active ? 'var(--on-color)' : 'var(--accent)' }}
       >
-        {done ? <IconCheck size={22} strokeWidth={3} /> : <IconPlay size={20} />}
+        {done ? <IconCheck size={22} strokeWidth={3} /> : active ? <IconCheck size={22} strokeWidth={2.5} /> : <IconPlay size={20} />}
       </button>
+      {lastText && (
+        <div className="text-sm muted num -mt-1 flex items-center gap-1" style={{ gridColumn: '2 / -1' }}>
+          <span className="sr-only">{lbl}, </span>última: {lastText}
+        </div>
+      )}
+      {active && (
+        <div className="grid gap-1.5 -mt-0.5 mb-1" style={{ gridColumn: '1 / -1', gridTemplateColumns: loaded ? 'repeat(4, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))' }} role="group" aria-label={`Ajuste rápido da ${lbl.toLowerCase()}`}>
+          {loaded && <StepBtn onClick={() => onBump('loadKg', -step)} label={`${fmtKg(step)} kg`} minus aria={`Menos ${fmtKg(step)} kg`} />}
+          {loaded && <StepBtn onClick={() => onBump('loadKg', step)} label={`${fmtKg(step)} kg`} aria={`Mais ${fmtKg(step)} kg`} />}
+          <StepBtn onClick={() => onBump('reps', -1)} label="1 rep" minus aria="Menos 1 repetição" />
+          <StepBtn onClick={() => onBump('reps', 1)} label="1 rep" aria="Mais 1 repetição" />
+        </div>
+      )}
     </>
   );
 }
 
+function StepBtn({ onClick, label, minus, aria }: { onClick: () => void; label: string; minus?: boolean; aria: string }) {
+  return (
+    <button onClick={onClick} aria-label={aria} className="tap press flex items-center justify-center gap-0.5 rounded-xl card2 font-semibold num text-[15px] px-1" style={{ minHeight: 48 }}>
+      {minus ? <IconMinus size={16} /> : <IconPlus size={16} />}{label}
+    </button>
+  );
+}
+
+// ---------------- Encerrar sessão ----------------
+
 function FinishSheet({ open, onClose, session, iso, week, phase }: { open: boolean; onClose: () => void; session: Session; iso: string; week: number; phase: PhaseId }) {
   const [pain, setPain] = useState<number | null>(null);
-  const [result, setResult] = useState<string[] | null>(null);
+  const [result, setResult] = useState<{ msgs: string[]; records: string[] } | null>(null);
   const existing = useLiveQuery(() => db.sessionLogs.where('[date+sessionId]').equals([iso, session.id]).first(), [iso, session.id]);
+  const prog = useSessionProgress(session, phase, week, iso);
   useEffect(() => { if (existing?.painMax != null) setPain(existing.painMax); }, [existing]);
 
   async function finish() {
@@ -418,7 +738,8 @@ function FinishSheet({ open, onClose, session, iso, week, phase }: { open: boole
       week, phase, painMax: pain, symptomAny, completed: true, ts: Date.now(),
     });
     // marca como feito todo exercício com série registrada
-    const setIds = new Set((await db.setLogs.where('[date+sessionId]').equals([iso, session.id]).toArray()).map((s) => s.exerciseId));
+    const todaySets = await db.setLogs.where('[date+sessionId]').equals([iso, session.id]).toArray();
+    const setIds = new Set(todaySets.map((s) => s.exerciseId));
     for (const id of setIds) {
       const row = logs.find((l) => l.exerciseId === id);
       if (!row) await db.exerciseLogs.add({ date: iso, sessionId: session.id, exerciseId: id, symptom: false, done: true, ts: Date.now() });
@@ -436,13 +757,37 @@ function FinishSheet({ open, onClose, session, iso, week, phase }: { open: boole
     }
     if (pain != null && pain > 3) msgs.push(`Dor ${pain}/10 no ombro: acima do aceitável (3/10). Nenhum aumento de carga vai ser sugerido para esta sessão. Se não voltar ao normal em 24 h, fale com a fisioterapia.`);
     if (!msgs.length) msgs.push('Sessão salva. Sem sintomas. As sugestões de aumento aparecem dentro de cada exercício.');
-    setResult(msgs);
+
+    // Recordes de carga: maior carga de hoje acima de qualquer sessão anterior
+    const records: string[] = [];
+    for (const id of setIds) {
+      const ex = getExercise(id);
+      if (!ex.loaded) continue;
+      const todayMax = Math.max(...todaySets.filter((s) => s.exerciseId === id && s.reps != null && s.loadKg != null).map((s) => s.loadKg as number), -Infinity);
+      if (!Number.isFinite(todayMax)) continue;
+      const before = (await db.setLogs.where('exerciseId').equals(id).toArray()).filter((s) => s.date < iso && s.loadKg != null);
+      if (!before.length) continue;
+      const prevMax = Math.max(...before.map((s) => s.loadKg as number));
+      if (todayMax > prevMax) records.push(`${ex.name}: ${fmtKg(todayMax)} kg (antes ${fmtKg(prevMax)} kg)`);
+    }
+    setResult({ msgs, records });
   }
+
+  const duration = prog.startTs && prog.endTs ? fmtDuration(prog.endTs - prog.startTs) : '—';
+  const summary = (
+    <div className="grid grid-cols-2 gap-2 mb-4">
+      <SumStat v={`${prog.doneCount}/${prog.total}`} l="exercícios feitos" />
+      <SumStat v={String(prog.setCount)} l="séries" />
+      <SumStat v={prog.volume ? `${fmtKg(prog.volume)} kg` : '—'} l="volume (kg × reps)" />
+      <SumStat v={duration} l="duração" />
+    </div>
+  );
 
   return (
     <Sheet open={open} onClose={() => { onClose(); setResult(null); }} title="Encerrar sessão">
       {!result ? (
         <div>
+          {summary}
           <div id="pain-label" className="font-semibold mb-1">Dor máxima no ombro hoje (0–10)</div>
           <p className="text-sm muted mb-3">Até 3/10 e voltando ao normal em 24 h é aceitável.</p>
           <div className="grid grid-cols-6 gap-2" role="group" aria-labelledby="pain-label">
@@ -463,13 +808,29 @@ function FinishSheet({ open, onClose, session, iso, week, phase }: { open: boole
         </div>
       ) : (
         <div>
+          {summary}
+          {result.records.length > 0 && (
+            <div className="card2 p-3 mb-2" style={{ boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent)' }}>
+              <div className="font-bold flex items-center gap-2" style={{ color: 'var(--accent)' }}><IconTrophy size={18} />Recorde de carga</div>
+              <ul className="mt-1.5 text-[15px] space-y-1 num">{result.records.map((r) => <li key={r}>{r}</li>)}</ul>
+            </div>
+          )}
           <ul className="space-y-2" role="status">
-            {result.map((m) => <li key={m} className="card2 p-3 text-[15px]">{m}</li>)}
+            {result.msgs.map((m) => <li key={m} className="card2 p-3 text-[15px]">{m}</li>)}
           </ul>
           <button onClick={() => { onClose(); setResult(null); }} className="tap press mt-4 w-full rounded-2xl py-3 font-bold card2">Fechar</button>
         </div>
       )}
     </Sheet>
+  );
+}
+
+function SumStat({ v, l }: { v: string; l: string }) {
+  return (
+    <div className="card2 px-3 py-2.5">
+      <div className="text-xl font-bold num leading-tight">{v}</div>
+      <div className="text-sm muted leading-snug">{l}</div>
+    </div>
   );
 }
 

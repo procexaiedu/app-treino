@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import type { useRestTimer } from '../lib/timer';
-import { IconPlus, IconStop, IconTimer } from './icons';
+import { IconMinus, IconPlus, IconSkip, IconTimer } from './icons';
 
 type T = ReturnType<typeof useRestTimer>;
 
-export function RestTimerBar({ t }: { t: T }) {
-  // avisa o layout (botão de alerta) que a barra está aberta
+/** Barra de descanso na zona do polegar: contagem grande, −15/+15 s e Pular (padrão Hevy/Strong). */
+export function RestTimerBar({ t, label }: { t: T; label?: string | null }) {
+  // avisa o layout que a barra está aberta (reserva espaço no fim da página)
   useEffect(() => {
     const el = document.documentElement;
     if (t.running) el.dataset.timer = 'on';
@@ -18,6 +19,7 @@ export function RestTimerBar({ t }: { t: T }) {
   const m = Math.floor(t.remaining / 60);
   const s = String(t.remaining % 60).padStart(2, '0');
   const ending = t.remaining <= 10;
+  const tone = ending ? 'var(--warn)' : 'var(--accent)';
   return (
     <div className="timer-bar fixed left-0 right-0 z-40 px-3" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 70px)' }}>
       <div
@@ -26,18 +28,25 @@ export function RestTimerBar({ t }: { t: T }) {
         role="timer"
         aria-label="Descanso"
       >
-        <div className="flex items-center gap-2">
-          <IconTimer size={22} className="shrink-0" style={{ color: ending ? 'var(--warn)' : 'var(--accent)' }} />
-          <div className="text-3xl font-bold tabular-nums leading-none flex-1" aria-live="off">{m}:{s}</div>
-          <button className="tap press flex items-center gap-1 px-3 rounded-xl card2 font-semibold" onClick={() => t.add(15)} aria-label="Mais 15 segundos">
-            <IconPlus size={18} />15 s
+        <div className="flex items-center gap-1.5 text-sm font-semibold min-w-0" style={{ color: tone }}>
+          <IconTimer size={18} className="shrink-0" />
+          <span className="shrink-0">Descanso</span>
+          {label && <span className="muted font-medium truncate">· {label}</span>}
+        </div>
+        <div className="flex items-center gap-2 mt-1.5">
+          <button className="tap press flex items-center justify-center gap-0.5 px-2 rounded-xl card2 font-semibold num whitespace-nowrap disabled:opacity-40" onClick={() => t.add(-15)} disabled={t.remaining <= 15} aria-label="Menos 15 segundos">
+            <IconMinus size={14} />15s
           </button>
-          <button className="tap press flex items-center gap-1.5 px-3 rounded-xl font-semibold" style={{ background: 'var(--danger)', color: 'var(--on-color)' }} onClick={t.stop}>
-            <IconStop size={16} />Parar
+          <div className="text-[38px] font-bold tabular-nums leading-none flex-1 min-w-0 text-center" aria-live="off" style={{ color: ending ? 'var(--warn)' : 'var(--text)' }}>{m}:{s}</div>
+          <button className="tap press flex items-center justify-center gap-0.5 px-2 rounded-xl card2 font-semibold num whitespace-nowrap" onClick={() => t.add(15)} aria-label="Mais 15 segundos">
+            <IconPlus size={14} />15s
+          </button>
+          <button className="tap press flex items-center gap-1.5 px-3 rounded-xl font-bold whitespace-nowrap" style={{ background: tone, color: 'var(--on-color)' }} onClick={t.stop}>
+            <IconSkip size={16} />Pular
           </button>
         </div>
         <div className="mt-2.5 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--card2)' }} aria-hidden="true">
-          <div className="h-full w-full rounded-full origin-left" style={{ transform: `scaleX(${pct / 100})`, background: ending ? 'var(--warn)' : 'var(--accent)', transition: 'transform .25s linear, background-color .3s' }} />
+          <div className="h-full w-full rounded-full origin-left" style={{ transform: `scaleX(${pct / 100})`, background: tone, transition: 'transform .25s linear, background-color .3s' }} />
         </div>
       </div>
     </div>

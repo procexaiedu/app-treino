@@ -39,7 +39,7 @@ export default function App() {
       <main className="min-h-full safe-top">
         <Routes>
           <Route path="/" element={<Today startDate={startDate} />} />
-          <Route path="/plano" element={<PlanPage />} />
+          <Route path="/plano" element={<PlanPage startDate={startDate} />} />
           <Route path="/comida" element={<NutritionPage />} />
           <Route path="/progresso" element={<Suspense fallback={<Loading />}><ProgressPage startDate={startDate} /></Suspense>} />
           <Route path="/mais" element={<SettingsPage startDate={startDate} onStartDate={setStartDate} />} />
