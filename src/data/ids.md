@@ -65,4 +65,4 @@ Formato: `id` — nome no plano — variação exata exigida (para vídeo) — k
 - `stretch_levator` — Levantador da escápula — nariz em direção à axila oposta — stretch — sim — não — sim
 - `stretch_hip_flexor` — Flexor do quadril (afundo) — posição de afundo, joelho no chão — stretch — sim — não — não
 
-Total: 43 itens. Todos precisam de vídeo.
+Total: 45 itens. Todos precisam de vídeo.

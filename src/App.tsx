@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <HashRouter>
-      <div className="min-h-full safe-top">
+      <main className="min-h-full safe-top">
         <Routes>
           <Route path="/" element={<Today startDate={startDate} />} />
           <Route path="/plano" element={<PlanPage />} />
@@ -26,6 +26,8 @@ export default function App() {
           <Route path="/progresso" element={<Suspense fallback={<div className="p-6 muted">Carregando…</div>}><ProgressPage startDate={startDate} /></Suspense>} />
           <Route path="/mais" element={<SettingsPage startDate={startDate} onStartDate={setStartDate} />} />
         </Routes>
+      </main>
+      <div>
         <AlertButton />
         <nav className="fixed bottom-0 left-0 right-0 z-30 safe-bottom" style={{ background: 'var(--card)', borderTop: '1px solid #1f2933' }} aria-label="Navegação">
           <div className="grid grid-cols-5">
@@ -55,7 +57,7 @@ function Onboarding({ onDone }: { onDone: (d: string) => void }) {
       <p className="muted mt-2">Plano adaptado ao desfiladeiro torácico. Os dados ficam só neste aparelho.</p>
       <label className="mt-6 block font-semibold">Quando você começa (ou começou)?</label>
       <p className="text-sm muted mb-2">A semana 1 é a semana desta data.</p>
-      <input type="date" value={d} onChange={(e) => setD(e.target.value)} className="tap w-full rounded-xl card px-3 text-lg" />
+      <input type="date" aria-label="Data de início do plano" value={d} onChange={(e) => setD(e.target.value)} className="tap w-full rounded-xl card px-3 text-lg" />
       <button
         onClick={async () => { await setSetting('startDate', d); onDone(d); }}
         className="tap mt-6 w-full rounded-2xl py-4 text-lg font-bold text-black" style={{ background: 'var(--accent)' }}
