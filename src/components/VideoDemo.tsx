@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { videoFor, youtubeEmbedUrl, type VideoEntry } from '../lib/videos';
+import { IconPlay } from './icons';
 
 function ImageSeq({ frames, alt }: { frames: string[]; alt: string }) {
   const [i, setI] = useState(0);
@@ -15,13 +16,13 @@ export function VideoDemo({ exerciseId, name }: { exerciseId: string; name: stri
   const v: VideoEntry | undefined = videoFor(exerciseId);
   const [play, setPlay] = useState(false);
   const [fileFailed, setFileFailed] = useState(false);
-  if (!v) return <div className="card2 p-3 text-sm muted">Sem demonstração cadastrada.</div>;
+  if (!v) return <div className="card2 mt-3 p-3 text-sm muted">Sem demonstração cadastrada.</div>;
 
   const base = v.url ?? '';
   const src = base.startsWith('/') ? `${import.meta.env.BASE_URL}${base.slice(1)}` : base;
 
   return (
-    <div className="mt-2">
+    <div className="mt-3">
       <div className="rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '16 / 9' }}>
         {v.kind === 'youtube' && (
           play ? (
@@ -34,7 +35,7 @@ export function VideoDemo({ exerciseId, name }: { exerciseId: string; name: stri
               referrerPolicy="strict-origin-when-cross-origin"
             />
           ) : (
-            <button className="w-full h-full relative" onClick={() => setPlay(true)} aria-label={`Ver demonstração de ${name}`}>
+            <button className="group w-full h-full relative" onClick={() => setPlay(true)} aria-label={`Ver demonstração de ${name}`}>
               <img
                 src={v.poster ?? `https://i.ytimg.com/vi/${v.youtubeId}/hqdefault.jpg`}
                 alt=""
@@ -42,7 +43,7 @@ export function VideoDemo({ exerciseId, name }: { exerciseId: string; name: stri
                 loading="lazy"
               />
               <span className="absolute inset-0 flex items-center justify-center">
-                <span className="rounded-full px-5 py-3 font-bold text-black" style={{ background: 'var(--accent)' }}>▶ Ver trecho{v.startSec != null ? ` (${fmt(v.startSec)}–${fmt(v.endSec ?? v.startSec + 30)})` : ''}</span>
+                <span className="flex items-center gap-2 rounded-full px-5 py-3 font-bold shadow-lg transition-transform group-active:scale-95" style={{ background: 'var(--accent)', color: 'var(--on-color)' }}><IconPlay size={18} />Ver trecho{v.startSec != null ? ` (${fmt(v.startSec)}–${fmt(v.endSec ?? v.startSec + 30)})` : ''}</span>
               </span>
             </button>
           )
@@ -50,18 +51,18 @@ export function VideoDemo({ exerciseId, name }: { exerciseId: string; name: stri
         {v.kind === 'file' && !fileFailed && (
           <video src={src} poster={v.poster} className="w-full h-full object-contain" controls playsInline muted loop preload="none" onError={() => setFileFailed(true)} />
         )}
-        {v.kind === 'file' && fileFailed && (v.frames?.length ? <ImageSeq frames={v.frames} alt={name} /> : <div className="p-3 text-sm muted">O vídeo não tocou neste navegador.</div>)}
+        {v.kind === 'file' && fileFailed && (v.frames?.length ? <ImageSeq frames={v.frames} alt={name} /> : <div className="h-full flex items-center justify-center p-3 text-sm muted">O vídeo não tocou neste navegador.</div>)}
         {v.kind === 'image-seq' && <ImageSeq frames={v.frames ?? []} alt={name} />}
         {v.kind === 'svg' && <img src={src} alt={name} className="w-full h-full object-contain" />}
       </div>
-      <div className="flex flex-wrap gap-2 mt-1 text-xs muted">
+      <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1.5 text-sm muted">
         <span>{v.source}</span>
         <span>·</span>
         <span>{v.license}</span>
         {v.quality === 'abaixo-do-ideal' && <span style={{ color: 'var(--warn)' }}>· abaixo do ideal</span>}
         {v.kind === 'youtube' && <span>· precisa de internet</span>}
       </div>
-      {v.flags?.length ? <p className="text-xs mt-1" style={{ color: 'var(--warn)' }}>{v.flags.join(' ')}</p> : null}
+      {v.flags?.length ? <p className="text-sm mt-1" style={{ color: 'var(--warn)' }}>{v.flags.join(' ')}</p> : null}
     </div>
   );
 }

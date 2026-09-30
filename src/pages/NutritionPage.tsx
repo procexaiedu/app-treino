@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { nutrition } from '../data/nutrition';
 import type { FoodOption } from '../data/types';
+import { TabChips } from '../components/TabChips';
 
 const TABS = ['Dia útil', 'Prato', 'Opções', 'Fim de semana', 'Suplementos'] as const;
 
@@ -8,15 +9,11 @@ export function NutritionPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>('Dia útil');
   const n = nutrition;
   return (
-    <div className="pb-32">
-      <header className="px-4 pt-3 pb-2"><h1 className="text-2xl font-bold">Alimentação</h1>
-        <div className="text-sm muted">{n.targets.kcalDay} kcal/dia · {n.targets.proteinG} g de proteína · {n.targets.rate}</div>
+    <div className="pb-40">
+      <header className="px-4 pt-4 pb-3"><h1 className="text-[28px] leading-tight font-bold">Alimentação</h1>
+        <div className="text-sm muted mt-1 num">{n.targets.kcalDay} kcal/dia · {n.targets.proteinG} g de proteína · {n.targets.rate}</div>
       </header>
-      <div className="px-4 flex gap-2 overflow-x-auto pb-2">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)} className="tap px-4 rounded-xl font-semibold whitespace-nowrap" style={{ background: tab === t ? 'var(--accent)' : 'var(--card)', color: tab === t ? '#000' : 'var(--text)' }}>{t}</button>
-        ))}
-      </div>
+      <TabChips tabs={TABS} value={tab} onChange={setTab} label="Seções da alimentação" />
       <div className="px-4 flex flex-col gap-3 mt-2">
         {tab === 'Dia útil' && (
           <>
@@ -25,10 +22,10 @@ export function NutritionPage() {
               <table className="w-full text-[15px]">
                 <tbody>
                   {n.weekdayMeals.map((m) => (
-                    <tr key={m.time + m.name} className="border-t" style={{ borderColor: 'var(--card2)' }}>
-                      <td className="py-2 font-semibold whitespace-nowrap align-top w-14">{m.time}</td>
+                    <tr key={m.time + m.name} className="border-t" style={{ borderColor: 'var(--border)' }}>
+                      <td className="py-2 pr-2 font-semibold whitespace-nowrap align-top w-14 num">{m.time}</td>
                       <td className="py-2 align-top">{m.name}{m.note ? <div className="text-sm muted">{m.note}</div> : null}</td>
-                      <td className="py-2 text-right whitespace-nowrap align-top muted">{m.kcal}<br /><span className="text-xs">{m.protein}</span></td>
+                      <td className="py-2 pl-2 text-right whitespace-nowrap align-top muted num">{m.kcal}<br /><span className="text-sm">{m.protein}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -57,8 +54,8 @@ export function NutritionPage() {
               <h2 className="font-bold text-lg mb-1">Prato em gramas</h2>
               <p className="text-sm muted mb-2">{n.plateNote}</p>
               <table className="w-full text-[15px]">
-                <thead><tr className="muted text-left text-sm"><th>Item</th><th>Almoço</th><th>Jantar</th></tr></thead>
-                <tbody>{n.plate.map((p) => <tr key={p.item} className="border-t" style={{ borderColor: 'var(--card2)' }}><td className="py-2">{p.item}</td><td className="py-2 font-semibold">{p.lunch}</td><td className="py-2 font-semibold">{p.dinner}</td></tr>)}</tbody>
+                <thead><tr className="muted text-left text-sm"><th scope="col" className="font-medium pb-1">Item</th><th scope="col" className="font-medium pb-1">Almoço</th><th scope="col" className="font-medium pb-1">Jantar</th></tr></thead>
+                <tbody>{n.plate.map((p) => <tr key={p.item} className="border-t" style={{ borderColor: 'var(--border)' }}><td className="py-2">{p.item}</td><td className="py-2 font-semibold">{p.lunch}</td><td className="py-2 font-semibold">{p.dinner}</td></tr>)}</tbody>
               </table>
             </section>
             <section className="card p-4">
@@ -84,7 +81,7 @@ export function NutritionPage() {
             ))}
             <section className="card p-4">
               <h2 className="font-bold text-lg mb-2">Bebidas</h2>
-              <table className="w-full text-[15px]"><tbody>{n.drinks.map((d) => <tr key={d.name} className="border-t" style={{ borderColor: 'var(--card2)' }}><td className="py-2">{d.name}</td><td className="py-2 text-right font-semibold whitespace-nowrap">{d.kcal}</td></tr>)}</tbody></table>
+              <table className="w-full text-[15px]"><tbody>{n.drinks.map((d) => <tr key={d.name} className="border-t" style={{ borderColor: 'var(--border)' }}><td className="py-2">{d.name}</td><td className="py-2 text-right font-semibold whitespace-nowrap">{d.kcal}</td></tr>)}</tbody></table>
             </section>
           </>
         )}
@@ -100,7 +97,7 @@ export function NutritionPage() {
 }
 
 function Stat({ v, l, small }: { v: string; l: string; small?: boolean }) {
-  return <div className="card2 p-2"><div className={small ? 'text-sm font-semibold' : 'text-lg font-bold'}>{v}</div><div className="text-xs muted">{l}</div></div>;
+  return <div className="card2 px-2 py-3 flex flex-col justify-center"><div className={`num leading-tight ${small ? 'text-sm font-semibold' : 'text-lg font-bold'}`}>{v}</div><div className="text-sm muted mt-0.5">{l}</div></div>;
 }
 
 function Options({ title, list, note }: { title: string; list: FoodOption[]; note?: string }) {

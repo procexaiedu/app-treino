@@ -5,6 +5,8 @@
   --bg: #0b0f14;
   --card: #141a22;
   --card2: #1b2330;
+  --card3: #232d3c; /* estado pressionado / hover sobre card2 */
+  --border: #243040;
   --text: #e8edf3;
   --muted: #8b98a8;
   --accent: #3ddc97;
@@ -13,6 +15,9 @@
   --danger: #ff5c5c;
   --left: #c77dff;
   --right: #4cc9f0;
+  --on-color: #05080b; /* texto sobre accent/warn/danger */
+  --focus: #9ff0cb;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html, body, #root { height: 100%; }
@@ -20,15 +25,31 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Inter, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
   -webkit-text-size-adjust: 100%;
+  caret-color: var(--accent);
 }
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.01em; }
+::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); color: var(--text); }
 input, select, textarea, button { font: inherit; color: inherit; }
-button { touch-action: manipulation; }
-input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+button, a, summary, select { touch-action: manipulation; cursor: pointer; }
+input[type=number] { -moz-appearance: textfield; appearance: textfield; font-variant-numeric: tabular-nums; }
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input::placeholder { color: var(--muted); opacity: 1; }
+input[type=date] { min-width: 0; }
+summary { list-style: none; }
+summary::-webkit-details-marker { display: none; }
+table { font-variant-numeric: tabular-nums; }
+
+/* Foco visível só para teclado; toque não mostra anel */
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 10px; }
+input:focus-visible, select:focus-visible { outline-offset: 0; box-shadow: inset 0 0 0 1px var(--accent); }
 
 .safe-top { padding-top: env(safe-area-inset-top); }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
@@ -37,5 +58,43 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-app
 .card2 { background: var(--card2); border-radius: 12px; }
 .muted { color: var(--muted); }
 .tap { min-height: 48px; min-width: 48px; }
+.num { font-variant-numeric: tabular-nums; }
 
-.recharts-text { fill: var(--muted); font-size: 11px; }
+/* Feedback de toque: escurece e comprime sem mudar o layout */
+.press { transition: transform 120ms var(--ease-out), background-color 150ms var(--ease-out), color 150ms var(--ease-out), opacity 150ms; }
+.press:active { transform: scale(0.97); opacity: 0.85; }
+
+/* Campos */
+.field { background: var(--card2); border: 1px solid var(--border); border-radius: 12px; transition: border-color 150ms, background-color 150ms; }
+.field:focus { border-color: var(--accent); }
+
+/* Linha de chips com rolagem interna sem barra visível */
+.chip-row { scrollbar-width: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+.chip-row::-webkit-scrollbar { display: none; }
+.chip-row > * { scroll-snap-align: start; }
+
+/* Pílula de status / etiqueta */
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; line-height: 1.2; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+
+.chevron { transition: transform 200ms var(--ease-out); }
+[aria-expanded=true] .chevron, details[open] .chevron { transform: rotate(180deg); }
+
+/* Folha inferior */
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.sheet-panel { animation: sheet-in 260ms var(--ease-out); }
+.sheet-scrim { animation: fade-in 200ms var(--ease-out); }
+.timer-bar { animation: sheet-in 220ms var(--ease-out); }
+
+/* Botão de alerta sobe quando o cronômetro está aberto */
+.alert-fab { bottom: calc(env(safe-area-inset-bottom) + 76px); transition: bottom 220ms var(--ease-out); }
+html[data-timer=on] .pb-timer { padding-bottom: 260px; }
+html[data-timer=on] .alert-fab { bottom: calc(env(safe-area-inset-bottom) + 172px); }
+
+.recharts-text { fill: var(--muted); font-size: 14px; }
+.recharts-legend-item-text { font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+  .press:active { transform: none; }
+}

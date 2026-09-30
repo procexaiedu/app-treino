@@ -2,26 +2,24 @@ import { useState } from 'react';
 import { plan } from '../data/plan';
 import { VideoDemo } from '../components/VideoDemo';
 import { getExercise } from '../lib/phase';
+import { TabChips } from '../components/TabChips';
+import { IconChevronDown } from '../components/icons';
 
 const TABS = ['Fases', 'Exercícios'] as const;
 
 export function PlanPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>('Fases');
   return (
-    <div className="pb-32">
-      <header className="px-4 pt-3 pb-2"><h1 className="text-2xl font-bold">Plano</h1></header>
-      <div className="px-4 flex gap-2 overflow-x-auto pb-2">
-        {TABS.map((t) => (
-          <button key={t} onClick={() => setTab(t)} className="tap px-4 rounded-xl font-semibold whitespace-nowrap" style={{ background: tab === t ? 'var(--accent)' : 'var(--card)', color: tab === t ? '#000' : 'var(--text)' }}>{t}</button>
-        ))}
-      </div>
+    <div className="pb-40">
+      <header className="px-4 pt-4 pb-3"><h1 className="text-[28px] leading-tight font-bold">Plano</h1></header>
+      <TabChips tabs={TABS} value={tab} onChange={setTab} label="Seções do plano" />
       <div className="px-4 flex flex-col gap-3 mt-2">
         {tab === 'Fases' && (
           <>
             {plan.phases.map((p) => (
               <section key={p.id} className="card p-4">
-                <h2 className="font-bold text-lg">Fase {p.id}: {p.name} <span className="muted text-sm font-normal">· semanas {p.weeks[0]}{p.weeks[1] !== p.weeks[0] ? `–${p.weeks[1]}` : ''}</span></h2>
-                <dl className="text-[15px] mt-2 grid grid-cols-[6rem_1fr] gap-y-1">
+                <h2 className="font-bold text-lg leading-snug">Fase {p.id}: {p.name} <span className="muted text-sm font-normal num whitespace-nowrap">· semanas {p.weeks[0]}{p.weeks[1] !== p.weeks[0] ? `–${p.weeks[1]}` : ''}</span></h2>
+                <dl className="text-[15px] mt-3 grid grid-cols-[5.5rem_1fr] gap-x-2 gap-y-2">
                   <dt className="muted">Séries</dt><dd>{p.setsRule}</dd>
                   <dt className="muted">RIR</dt><dd>{p.rirRule}</dd>
                   <dt className="muted">Objetivo</dt><dd>{p.goal}</dd>
@@ -34,10 +32,10 @@ export function PlanPage() {
               <table className="w-full text-[15px]">
                 <tbody>
                   {plan.sessions.map((s) => (
-                    <tr key={s.id} className="border-t" style={{ borderColor: 'var(--card2)' }}>
+                    <tr key={s.id} className="border-t" style={{ borderColor: 'var(--border)' }}>
                       <td className="py-2 font-semibold w-8">{s.id}</td>
                       <td className="py-2">{s.subtitle}</td>
-                      <td className="py-2 muted text-right whitespace-nowrap">{s.cardio[1].minutes} min</td>
+                      <td className="py-2 muted text-right whitespace-nowrap num">{s.cardio[1].minutes} min</td>
                     </tr>
                   ))}
                 </tbody>
@@ -66,27 +64,27 @@ function ExerciseLibrary() {
   return (
     <>
       {Object.entries(groups).map(([g, ids]) => (
-        <section key={g}>
+        <section key={g} className="mt-2 first:mt-0">
           <h2 className="font-bold text-lg px-1 mb-2">{g} <span className="muted text-sm font-normal">({ids.length})</span></h2>
           <div className="flex flex-col gap-2">
             {ids.map((id) => {
               const ex = getExercise(id);
               const open = openId === id;
               return (
-                <div key={id} className="card p-3">
-                  <button className="w-full text-left flex justify-between items-center" onClick={() => setOpenId(open ? null : id)}>
+                <div key={id} className="card">
+                  <button className="tap w-full text-left flex justify-between items-center gap-3 px-4 py-3 rounded-2xl active:bg-[var(--card2)] transition-colors" onClick={() => setOpenId(open ? null : id)} aria-expanded={open}>
                     <span className="font-semibold">{ex.name}</span>
-                    <span className="muted">{open ? '▾' : '▸'}</span>
+                    <IconChevronDown size={22} className="chevron muted shrink-0" />
                   </button>
                   {open && (
-                    <div className="mt-2">
+                    <div className="px-4 pb-4">
                       <div className="text-sm muted">{ex.equipment.join(', ')}{ex.unilateral ? ' · unilateral (começa pelo esquerdo)' : ''}</div>
                       <ul className="list-disc pl-5 text-[15px] mt-1 space-y-1">{ex.cues.map((c) => <li key={c}>{c}</li>)}</ul>
                       {ex.cautions?.length ? <ul className="list-disc pl-5 text-[15px] mt-1 space-y-1" style={{ color: 'var(--warn)' }}>{ex.cautions.map((c) => <li key={c}>{c}</li>)}</ul> : null}
-                      <table className="w-full text-sm mt-2">
-                        <thead><tr className="muted text-left"><th>Fase</th><th>Séries</th><th>Reps</th><th>Desc.</th><th>RIR</th></tr></thead>
+                      <table className="w-full text-sm mt-3">
+                        <thead><tr className="muted text-left"><th scope="col" className="font-medium pb-1">Fase</th><th scope="col" className="font-medium pb-1">Séries</th><th scope="col" className="font-medium pb-1">Reps</th><th scope="col" className="font-medium pb-1">Desc.</th><th scope="col" className="font-medium pb-1">RIR</th></tr></thead>
                         <tbody>
-                          {([1, 2, 3, 4] as const).map((p) => { const pr = ex.prescription[p]; return <tr key={p} className="border-t" style={{ borderColor: 'var(--card2)' }}><td className="py-1">{p}</td><td>{pr.sets}</td><td>{pr.reps}</td><td>{pr.restSec ? `${pr.restSec} s` : '—'}</td><td>{pr.rir}</td></tr>; })}
+                          {([1, 2, 3, 4] as const).map((p) => { const pr = ex.prescription[p]; return <tr key={p} className="border-t" style={{ borderColor: 'var(--border)' }}><td className="py-1.5 font-semibold">{p}</td><td>{pr.sets}</td><td>{pr.reps}</td><td>{pr.restSec ? `${pr.restSec} s` : '—'}</td><td>{pr.rir}</td></tr>; })}
                         </tbody>
                       </table>
                       <VideoDemo exerciseId={id} name={ex.name} />
