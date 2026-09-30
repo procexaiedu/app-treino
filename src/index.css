@@ -86,10 +86,7 @@ input:focus-visible, select:focus-visible { outline-offset: 0; box-shadow: inset
 .sheet-scrim { animation: fade-in 200ms var(--ease-out); }
 .timer-bar { animation: sheet-in 220ms var(--ease-out); }
 
-/* Botão de alerta sobe quando o cronômetro está aberto */
-.alert-fab { bottom: calc(env(safe-area-inset-bottom) + 76px); transition: bottom 220ms var(--ease-out); }
 html[data-timer=on] .pb-timer { padding-bottom: 260px; }
-html[data-timer=on] .alert-fab { bottom: calc(env(safe-area-inset-bottom) + 172px); }
 
 .recharts-text { fill: var(--muted); font-size: 14px; }
 .recharts-legend-item-text { font-size: 14px; }

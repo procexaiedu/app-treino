@@ -2,7 +2,6 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { HashRouter, NavLink, Route, Routes } from 'react-router-dom';
 import { getSetting, setSetting } from './lib/db';
 import { todayISO } from './lib/phase';
-import { AlertButton } from './components/AlertButton';
 import { Today } from './pages/Today';
 import { PlanPage } from './pages/PlanPage';
 import { NutritionPage } from './pages/NutritionPage';
@@ -47,7 +46,6 @@ export default function App() {
         </Routes>
       </main>
       <div>
-        <AlertButton />
         <nav className="fixed bottom-0 left-0 right-0 z-30 safe-bottom" style={{ background: 'color-mix(in srgb, var(--card) 94%, transparent)', borderTop: '1px solid var(--border)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }} aria-label="Navegação">
           <div className="grid grid-cols-5 px-1">
             {NAV.map(([to, label, Icon]) => (

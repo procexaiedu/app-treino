@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { db, exportBackup, importBackup, setSetting, type Backup } from '../lib/db';
 import { plan } from '../data/plan';
 import { IconDownload, IconTrash, IconUpload } from '../components/icons';
+import { AlertButton } from '../components/AlertButton';
 
 export function SettingsPage({ startDate, onStartDate }: { startDate: string; onStartDate: (d: string) => void }) {
   const [msg, setMsg] = useState<string | null>(null);
@@ -35,6 +36,8 @@ export function SettingsPage({ startDate, onStartDate }: { startDate: string; on
         <p id="start-hint" className="text-sm muted mb-3">A semana e a fase são calculadas a partir da segunda-feira desta data.</p>
         <input id="start-date" aria-describedby="start-hint" type="date" className="tap field w-full px-3 text-lg" value={startDate} onChange={async (e) => { if (e.target.value) { await setSetting('startDate', e.target.value); onStartDate(e.target.value); } }} />
       </section>
+
+      <AlertButton />
 
       <section className="card p-4 mt-3">
         <h2 className="font-bold text-lg mb-1">Backup</h2>

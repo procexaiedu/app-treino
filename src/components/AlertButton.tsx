@@ -10,19 +10,22 @@ const LEVEL_STYLE: Record<string, { bg: string; label: string }> = {
   physio: { bg: 'var(--accent2)', label: 'Fisioterapia / médico' },
 };
 
+/** Entrada "Sinais de alerta" em forma de card (usada na aba Mais). */
 export function AlertButton() {
   const [open, setOpen] = useState(false);
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Sinais de alerta"
         aria-haspopup="dialog"
-        className="alert-fab press fixed right-4 z-40 tap rounded-full font-bold pl-4 pr-5 flex items-center gap-2"
-        style={{ background: 'var(--danger)', color: 'var(--on-color)', minHeight: 56, boxShadow: '0 6px 20px rgba(255,92,92,0.28), 0 2px 6px rgba(0,0,0,0.5)' }}
+        className="press tap card w-full p-4 mt-3 flex items-center gap-3 text-left"
+        style={{ boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--danger) 40%, transparent)' }}
       >
-        <IconAlert size={22} strokeWidth={2.25} />
-        Alerta
+        <span className="flex items-center justify-center rounded-full shrink-0" style={{ width: 40, height: 40, background: 'color-mix(in srgb, var(--danger) 18%, transparent)', color: 'var(--danger)' }}><IconAlert size={22} strokeWidth={2.25} /></span>
+        <span>
+          <span className="block font-bold text-lg">Sinais de alerta</span>
+          <span className="block text-sm muted">Quando parar a série, o treino, ou procurar atendimento</span>
+        </span>
       </button>
       <Sheet open={open} onClose={() => setOpen(false)} title="Sinais de alerta" danger>
         <p className="muted text-[15px] mb-4">{plan.progression.acceptablePain}</p>
